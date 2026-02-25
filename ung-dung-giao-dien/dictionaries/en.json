@@ -1,0 +1,24 @@
+{
+    "errors": {
+        "L_CHUNG_001": "An internal system error has occurred.",
+        "L_CHUNG_002": "Bad request.",
+        "L_XAC_THUC_001": "Please login to continue.",
+        "L_XAC_THUC_002": "You do not have permission to access this feature.",
+        "L_CHUNG_004": "Resource not found.",
+        "L_CHUNG_005": "Invalid input data.",
+        "L_TAI_KHOAN_001": "Account information not found.",
+        "L_TAI_KHOAN_002": "The account is currently locked or inactive.",
+        "L_VAI_TRO_001": "The specified role was not found.",
+        "L_TAI_KHOAN_003": "This email is already registered.",
+        "L_TAI_CHINH_001": "Insufficient balance to perform this transaction.",
+        "L_TAI_CHINH_002": "Invalid amount. Please check again.",
+        "L_TAI_CHINH_003": "Duplicate transaction. Please do not submit again."
+    },
+    "common": {
+        "home": "Home",
+        "login": "Login",
+        "logout": "Logout",
+        "loading": "Loading...",
+        "error_title": "Error Notification"
+    }
+}

@@ -1,0 +1,48 @@
+[96msrc/auth/auth.controller.ts[0m:[93m19[0m:[93m58[0m - [91merror[0m[90m TS1272: [0mA type referenced in a decorated signature must be imported with 'import type' or a namespace import when 'isolatedModules' and 'emitDecoratorMetadata' are enabled.
+
+[7m19[0m     async dangNhap(@Body() dto: DangNhapDto, @Req() req: Request) {
+[7m  [0m [91m                                                         ~~~~~~~[0m
+
+  [96msrc/auth/auth.controller.ts[0m:[93m6[0m:[93m10[0m
+    [7m6[0m import { Request } from 'express';
+    [7m [0m [96m         ~~~~~~~[0m
+    'Request' was imported here.
+[96msrc/auth/auth.controller.ts[0m:[93m28[0m:[93m32[0m - [91merror[0m[90m TS1272: [0mA type referenced in a decorated signature must be imported with 'import type' or a namespace import when 'isolatedModules' and 'emitDecoratorMetadata' are enabled.
+
+[7m28[0m     async dangXuat(@Req() req: Request) {
+[7m  [0m [91m                               ~~~~~~~[0m
+
+  [96msrc/auth/auth.controller.ts[0m:[93m6[0m:[93m10[0m
+    [7m6[0m import { Request } from 'express';
+    [7m [0m [96m         ~~~~~~~[0m
+    'Request' was imported here.
+[96msrc/users/users.controller.ts[0m:[93m12[0m:[93m31[0m - [91merror[0m[90m TS1272: [0mA type referenced in a decorated signature must be imported with 'import type' or a namespace import when 'isolatedModules' and 'emitDecoratorMetadata' are enabled.
+
+[7m12[0m     async layHoSo(@Req() req: Request) {
+[7m  [0m [91m                              ~~~~~~~[0m
+
+  [96msrc/users/users.controller.ts[0m:[93m4[0m:[93m10[0m
+    [7m4[0m import { Request } from 'express';
+    [7m [0m [96m         ~~~~~~~[0m
+    'Request' was imported here.
+[96msrc/users/users.controller.ts[0m:[93m19[0m:[93m21[0m - [91merror[0m[90m TS1272: [0mA type referenced in a decorated signature must be imported with 'import type' or a namespace import when 'isolatedModules' and 'emitDecoratorMetadata' are enabled.
+
+[7m19[0m         @Req() req: Request,
+[7m  [0m [91m                    ~~~~~~~[0m
+
+  [96msrc/users/users.controller.ts[0m:[93m4[0m:[93m10[0m
+    [7m4[0m import { Request } from 'express';
+    [7m [0m [96m         ~~~~~~~[0m
+    'Request' was imported here.
+[96msrc/users/users.controller.ts[0m:[93m28[0m:[93m21[0m - [91merror[0m[90m TS1272: [0mA type referenced in a decorated signature must be imported with 'import type' or a namespace import when 'isolatedModules' and 'emitDecoratorMetadata' are enabled.
+
+[7m28[0m         @Req() req: Request,
+[7m  [0m [91m                    ~~~~~~~[0m
+
+  [96msrc/users/users.controller.ts[0m:[93m4[0m:[93m10[0m
+    [7m4[0m import { Request } from 'express';
+    [7m [0m [96m         ~~~~~~~[0m
+    'Request' was imported here.
+
+Found 5 error(s).
+

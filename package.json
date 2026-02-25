@@ -1,0 +1,39 @@
+{
+  "name": "rutgonlink",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"docker compose up\" \"npm run dev:services\"",
+    "dev:services": "wait-on tcp:5432 tcp:6379 && npm run prisma:generate && concurrently \"npm run dev -w ung-dung-giao-dien\" \"npm run dev -w cong-khai-chuyen-huong\" \"npm run start:dev -w may-chu-nghiep-vu\" \"npm run start:dev -w xu-ly-nen\"",
+    "prisma:generate": "npm run build -w tap-lenh-cap-nhat-du-lieu",
+    "build": "npm run build --workspaces --if-present",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "workspaces": [
+    "ung-dung-giao-dien",
+    "may-chu-nghiep-vu",
+    "cong-khai-chuyen-huong",
+    "xu-ly-nen",
+    "goi-dung-chung/*",
+    "tap-lenh-cap-nhat-du-lieu"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-promise": "^6.6.0",
+    "prettier": "^3.8.1",
+    "wait-on": "^9.0.4"
+  }
+}

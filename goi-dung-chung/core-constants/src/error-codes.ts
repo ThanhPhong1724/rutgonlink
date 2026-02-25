@@ -1,0 +1,22 @@
+export const ERROR_CODES = {
+    // Lỗi chung hệ thống
+    INTERNAL_SERVER_ERROR: 'L_CHUNG_001',
+    BAD_REQUEST: 'L_CHUNG_002',
+    UNAUTHORIZED: 'L_XAC_THUC_001',
+    FORBIDDEN: 'L_XAC_THUC_002',
+    NOT_FOUND: 'L_CHUNG_004',
+    VALIDATION_ERROR: 'L_CHUNG_005',
+
+    // Lỗi Tài khoản & Phân quyền
+    USER_NOT_FOUND: 'L_TAI_KHOAN_001',
+    USER_INACTIVE: 'L_TAI_KHOAN_002',
+    ROLE_NOT_FOUND: 'L_VAI_TRO_001',
+    EMAIL_ALREADY_EXISTS: 'L_TAI_KHOAN_003',
+
+    // Lỗi Tài chính
+    INSUFFICIENT_BALANCE: 'L_TAI_CHINH_001',
+    INVALID_AMOUNT: 'L_TAI_CHINH_002',
+    DUPLICATE_TRANSACTION: 'L_TAI_CHINH_003',
+} as const;
+
+export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];

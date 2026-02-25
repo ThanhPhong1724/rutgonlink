@@ -1,0 +1,25 @@
+{
+  "name": "@rutgonlink/tap-lenh-cap-nhat-du-lieu",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest test/integration.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.4.1",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "prisma": "^6.4.1",
+    "ts-jest": "^29.4.6",
+    "tsx": "^4.21.0"
+  }
+}

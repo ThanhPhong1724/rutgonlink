@@ -1,0 +1,24 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.next/
+out/
+build/
+coverage/
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.idea/
+.vscode/
+
+# Ignore SQLite databases if any
+*.db
+*.sqlite
+
+# Ignore compiled TS
+*.js.map
+*.d.ts

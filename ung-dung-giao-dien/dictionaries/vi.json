@@ -1,0 +1,24 @@
+{
+    "errors": {
+        "L_CHUNG_001": "Đã có lỗi xảy ra trên hệ thống.",
+        "L_CHUNG_002": "Yêu cầu không hợp lệ.",
+        "L_XAC_THUC_001": "Vui lòng đăng nhập để tiếp tục.",
+        "L_XAC_THUC_002": "Bạn không có quyền truy cập chức năng này.",
+        "L_CHUNG_004": "Tài nguyên không được tìm thấy.",
+        "L_CHUNG_005": "Dữ liệu đầu vào không hợp lệ.",
+        "L_TAI_KHOAN_001": "Không tìm thấy thông tin tài khoản.",
+        "L_TAI_KHOAN_002": "Tài khoản hiện đang bị khóa hoặc chưa kích hoạt.",
+        "L_VAI_TRO_001": "Không tìm thấy vai trò bạn chỉ định.",
+        "L_TAI_KHOAN_003": "Thư điện tử này đã được đăng ký.",
+        "L_TAI_CHINH_001": "Số dư không đủ để thực hiện giao dịch.",
+        "L_TAI_CHINH_002": "Số tiền không hợp lệ. Vui lòng kiểm tra lại.",
+        "L_TAI_CHINH_003": "Giao dịch bị trùng lặp. Vui lòng không gửi lại yêu cầu."
+    },
+    "common": {
+        "home": "Trang Chủ",
+        "login": "Đăng Nhập",
+        "logout": "Đăng Xuất",
+        "loading": "Đang tải...",
+        "error_title": "Thông Báo Lỗi"
+    }
+}

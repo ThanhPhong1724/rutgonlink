@@ -1,0 +1,24 @@
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\Admin\Downloads\RutGonLink\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\Admin\Downloads\RutGonLink\ung-dung-giao-dien\pnpm-lock.yaml
+
+▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1302.5ms
+  Running TypeScript ...
+Failed to compile.
+
+./tailwind.config.ts:1:29
+Type error: Cannot find module 'tailwindcss' or its corresponding type declarations.
+  There are types at 'C:/Users/Admin/Downloads/RutGonLink/ung-dung-giao-dien/node_modules/tailwindcss/dist/lib.d.mts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m type { [33mConfig[39m } [36mfrom[39m [32m"tailwindcss"[39m[33m;[39m
+ [90m   |[39m                             [31m[1m^[22m[39m
+ [90m 2 |[39m
+ [90m 3 |[39m [36mexport[39m [36mdefault[39m {
+ [90m 4 |[39m     content[33m:[39m [[0m
+Next.js build worker exited with code: 1 and signal: null

@@ -1,0 +1,404 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// NHÓM TÀI KHOẢN VÀ PHÂN QUYỀN
+// -----------------------------------------------------------------------------
+
+model nguoi_dung {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_cong_khai              String    @unique @db.VarChar(40)
+  loai_tai_khoan_mac_dinh   String    @db.VarChar(50)
+  thu_dien_tu               String    @unique @db.VarChar(255)
+  thu_dien_tu_da_xac_minh   Boolean   @default(false)
+  mat_khau_bam              String    @db.VarChar(500)
+  ten_hien_thi              String    @db.VarChar(255)
+  so_dien_thoai             String?   @db.VarChar(50)
+  cau_hinh_rut_tien         String?   @db.Text // JSON lưu Ngân hàng, STK, Tên chủ thẻ, Ví USDT
+  ngon_ngu_mac_dinh         String    @db.VarChar(5) // vi or en
+  mui_gio_mac_dinh          String    @db.VarChar(50)
+  trang_thai                String    @db.VarChar(50)
+  thoi_diem_dang_nhap_cuoi  DateTime? @db.Timestamptz
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
+  thoi_diem_xoa_mem         DateTime? @db.Timestamptz
+
+  ma_nguoi_dung_tao         BigInt?
+  ma_nguoi_dung_cap_nhat    BigInt?
+
+  // Lời giải (Relations)
+  vai_tro_duoc_gan          gan_vai_tro_nguoi_dung[]
+  nguoi_tao                 nguoi_dung? @relation("TaoNguoiDung", fields: [ma_nguoi_dung_tao], references: [ma])
+  nguoi_duoc_tao            nguoi_dung[] @relation("TaoNguoiDung")
+  
+  nguoi_cap_nhat            nguoi_dung? @relation("CapNhatNguoiDung", fields: [ma_nguoi_dung_cap_nhat], references: [ma])
+  nguoi_duoc_cap_nhat       nguoi_dung[] @relation("CapNhatNguoiDung")
+
+  vi_nguoi_dung             vi_nguoi_dung[]
+  so_cai_giao_dich_tao      so_cai_giao_dich[]
+  phien_dang_nhap           phien_dang_nhap[]
+  hoa_don_nap_tao           hoa_don_nap[]
+  yeu_cau_rut_tao           yeu_cau_rut[]
+  nhat_ky_quan_tri_tao      nhat_ky_quan_tri[]
+  lien_ket_tao              lien_ket_rut_gon[]
+
+  @@index([trang_thai])
+  @@index([loai_tai_khoan_mac_dinh])
+}
+
+// -----------------------------------------------------------------------------
+// PHIÊN ĐĂNG NHẬP (Refresh Token)
+// -----------------------------------------------------------------------------
+
+model phien_dang_nhap {
+  ma                  BigInt    @id @default(autoincrement())
+  ma_nguoi_dung       BigInt
+  refresh_token_bam   String    @db.VarChar(500)
+  dia_chi_ip          String?   @db.VarChar(50)
+  user_agent          String?   @db.VarChar(500)
+  dang_hoat_dong      Boolean   @default(true)
+  thoi_diem_tao       DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_het_han   DateTime  @db.Timestamptz
+
+  nguoi_dung          nguoi_dung @relation(fields: [ma_nguoi_dung], references: [ma])
+
+  @@index([ma_nguoi_dung, dang_hoat_dong])
+  @@index([refresh_token_bam])
+}
+
+model vai_tro {
+  ma                 BigInt    @id @default(autoincrement())
+  ma_vai_tro         String    @unique @db.VarChar(50)
+  ten_vai_tro        String    @unique @db.VarChar(255)
+  mo_ta              String?   @db.Text
+  la_vai_tro_he_thong Boolean   @default(true)
+  dang_hoat_dong     Boolean   @default(true)
+  thoi_diem_tao      DateTime  @default(now()) @db.Timestamptz
+
+  nguoi_dung_duoc_gan gan_vai_tro_nguoi_dung[]
+  quyen_duoc_gan      gan_quyen_vai_tro[]
+}
+
+model gan_vai_tro_nguoi_dung {
+  ma                    BigInt    @id @default(autoincrement())
+  ma_nguoi_dung         BigInt
+  ma_vai_tro            BigInt
+  trang_thai            String    @db.VarChar(50)
+  thoi_diem_hieu_luc_tu DateTime  @db.Timestamptz
+  thoi_diem_hieu_luc_den DateTime? @db.Timestamptz
+  ma_nguoi_dung_tao     BigInt
+  thoi_diem_tao         DateTime  @default(now()) @db.Timestamptz
+
+  nguoi_dung            nguoi_dung @relation(fields: [ma_nguoi_dung], references: [ma])
+  vai_tro               vai_tro    @relation(fields: [ma_vai_tro], references: [ma])
+
+  @@unique([ma_nguoi_dung, ma_vai_tro, thoi_diem_hieu_luc_tu])
+  @@index([ma_nguoi_dung])
+  @@index([ma_vai_tro, trang_thai])
+}
+
+model quyen {
+  ma                 BigInt    @id @default(autoincrement())
+  ma_quyen           String    @unique @db.VarChar(100)
+  ten_quyen          String    @db.VarChar(255)
+  nhom_quyen         String    @db.VarChar(100)
+  mo_ta              String?   @db.Text
+  dang_hoat_dong     Boolean   @default(true)
+  thoi_diem_tao      DateTime  @default(now()) @db.Timestamptz
+
+  vai_tro_duoc_gan   gan_quyen_vai_tro[]
+}
+
+model gan_quyen_vai_tro {
+  ma                    BigInt    @id @default(autoincrement())
+  ma_quyen              BigInt
+  ma_vai_tro            BigInt
+  thoi_diem_tao         DateTime  @default(now()) @db.Timestamptz
+
+  quyen                 quyen   @relation(fields: [ma_quyen], references: [ma])
+  vai_tro               vai_tro @relation(fields: [ma_vai_tro], references: [ma])
+
+  @@unique([ma_quyen, ma_vai_tro])
+  @@index([ma_vai_tro])
+}
+
+
+// -----------------------------------------------------------------------------
+// NHÓM TÀI CHÍNH, VÍ VÀ SỔ CÁI
+// -----------------------------------------------------------------------------
+
+model vi_nguoi_dung {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_cong_khai              String    @unique @db.VarChar(40)
+  ma_nguoi_dung             BigInt
+  loai_vi                   String    @db.VarChar(50)
+  don_vi_tien               String    @db.VarChar(10)
+  
+  so_du_kha_dung            Decimal   @db.Decimal(19, 4)
+  so_du_khoa_tam            Decimal   @db.Decimal(19, 4)
+  
+  trang_thai                String    @db.VarChar(50)
+  thoi_diem_cap_nhat_so_du  DateTime  @db.Timestamptz
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
+
+  nguoi_dung                nguoi_dung @relation(fields: [ma_nguoi_dung], references: [ma])
+  so_cai_giao_dich          so_cai_giao_dich[]
+
+  @@unique([ma_nguoi_dung, loai_vi, don_vi_tien])
+  @@index([ma_nguoi_dung])
+  @@index([trang_thai])
+}
+
+model so_cai_giao_dich {
+  ma                            BigInt    @id @default(autoincrement())
+  ma_cong_khai                  String    @unique @db.VarChar(40)
+  ma_vi                         BigInt
+  loai_giao_dich                String    @db.VarChar(50)
+  huong_bien_dong               String    @db.VarChar(10)
+  loai_so_du_tac_dong           String    @db.VarChar(20)
+  
+  so_tien                       Decimal   @db.Decimal(19, 4)
+  don_vi_tien                   String    @db.VarChar(10)
+  
+  so_du_kha_dung_truoc          Decimal   @db.Decimal(19, 4)
+  so_du_kha_dung_sau            Decimal   @db.Decimal(19, 4)
+  so_du_khoa_tam_truoc          Decimal   @db.Decimal(19, 4)
+  so_du_khoa_tam_sau            Decimal   @db.Decimal(19, 4)
+  
+  nguon_phat_sinh               String    @db.VarChar(50)
+  ma_tham_chieu_nguon           BigInt
+  ma_tham_chieu_phu             BigInt?
+  ma_khoa_chong_trung           String    @unique @db.VarChar(255)
+  trang_thai                    String    @db.VarChar(50)
+  mo_ta_hien_thi                String?   @db.VarChar(500)
+  ghi_chu_noi_bo                String?   @db.Text
+  thoi_diem_phat_sinh_nghiep_vu DateTime  @db.Timestamptz
+  thoi_diem_ghi_so              DateTime  @default(now()) @db.Timestamptz
+  
+  ma_nguoi_dung_tao             BigInt?
+  nguon_tao                     String    @db.VarChar(50)
+
+  vi                            vi_nguoi_dung @relation(fields: [ma_vi], references: [ma])
+  nguoi_dung_tao                nguoi_dung?   @relation(fields: [ma_nguoi_dung_tao], references: [ma])
+
+  @@index([ma_vi, thoi_diem_ghi_so])
+  @@index([nguon_phat_sinh, ma_tham_chieu_nguon])
+  @@index([ma_tham_chieu_phu])
+  @@index([trang_thai])
+}
+
+// -----------------------------------------------------------------------------
+// NHÓM NẠP TIỀN THỦ CÔNG (TL08)
+// -----------------------------------------------------------------------------
+
+model hoa_don_nap {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_cong_khai              String    @unique @db.VarChar(40)
+  ma_nguoi_dung             BigInt
+  so_tien_yeu_cau           Decimal   @db.Decimal(19, 4)
+  don_vi_tien               String    @db.VarChar(10)
+  phuong_thuc_nap           String    @db.VarChar(50) // ngan_hang, usdt
+  trang_thai                String    @db.VarChar(50) // cho_thanh_toan, cho_chung_tu, cho_duyet, dang_kiem_tra, thanh_cong, tu_choi, het_han, da_huy
+  noi_dung_tham_chieu       String    @db.VarChar(255)
+  
+  // Chụp cấu hình tại thời điểm tạo
+  cau_hinh_phuong_thuc_chup String?   @db.Text // JSON snapshot
+  cau_hinh_khuyen_mai_chup  String?   @db.Text // JSON snapshot
+  so_tien_khuyen_mai        Decimal?  @db.Decimal(19, 4)
+  
+  ghi_chu_nguoi_dung        String?   @db.Text
+  ly_do_tu_choi             String?   @db.Text
+  ly_do_duyet_ngoai_le      String?   @db.Text
+  ghi_chu_xu_ly             String?   @db.Text
+  
+  ma_nguoi_duyet            BigInt?
+  thoi_diem_duyet           DateTime? @db.Timestamptz
+  thoi_diem_het_han         DateTime  @db.Timestamptz
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
+
+  nguoi_dung                nguoi_dung @relation(fields: [ma_nguoi_dung], references: [ma])
+  chung_tu                  chung_tu_nap[]
+
+  @@index([ma_nguoi_dung, trang_thai])
+  @@index([trang_thai])
+  @@index([thoi_diem_het_han])
+}
+
+model chung_tu_nap {
+  ma                    BigInt    @id @default(autoincrement())
+  ma_hoa_don_nap        BigInt
+  duong_dan_tep         String    @db.VarChar(500)
+  loai_tep              String    @db.VarChar(50)
+  ma_giao_dich_khai_bao String?   @db.VarChar(255)
+  ghi_chu               String?   @db.Text
+  la_ban_hien_hanh      Boolean   @default(true)
+  ma_nguoi_tai          BigInt
+  thoi_diem_tai         DateTime  @default(now()) @db.Timestamptz
+
+  hoa_don_nap           hoa_don_nap @relation(fields: [ma_hoa_don_nap], references: [ma])
+
+  @@index([ma_hoa_don_nap])
+}
+
+// -----------------------------------------------------------------------------
+// NHÓM RÚT TIỀN THỦ CÔNG (TL09)
+// -----------------------------------------------------------------------------
+
+model yeu_cau_rut {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_cong_khai              String    @unique @db.VarChar(40)
+  ma_nguoi_dung             BigInt
+  so_tien_yeu_cau           Decimal   @db.Decimal(19, 4)
+  don_vi_tien               String    @db.VarChar(10)
+  phuong_thuc_rut           String    @db.VarChar(50) // ngan_hang, usdt
+  trang_thai                String    @db.VarChar(50) // cho_duyet, dang_xu_ly, da_duyet, da_gui, hoan_thanh, tu_choi, hoan_tien
+  
+  // Chụp thông tin nhận tiền
+  thong_tin_nhan_tien_chup  String    @db.Text // JSON snapshot
+  
+  ly_do_tu_choi             String?   @db.Text
+  ly_do_hoan_tien           String?   @db.Text
+  ghi_chu_xu_ly             String?   @db.Text
+  ghi_chu_nguoi_dung        String?   @db.Text
+  
+  so_tien_thuc_chi          Decimal?  @db.Decimal(19, 4)
+  ma_tham_chieu_chi_tra     String?   @db.VarChar(255)
+  thoi_diem_chi_tra         DateTime? @db.Timestamptz
+  
+  ma_nguoi_xu_ly            BigInt?
+  thoi_diem_duyet           DateTime? @db.Timestamptz
+  thoi_diem_gui             DateTime? @db.Timestamptz
+  thoi_diem_hoan_thanh      DateTime? @db.Timestamptz
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
+
+  nguoi_dung                nguoi_dung @relation(fields: [ma_nguoi_dung], references: [ma])
+  bang_chung                bang_chung_rut[]
+
+  @@index([ma_nguoi_dung, trang_thai])
+  @@index([trang_thai])
+}
+
+model bang_chung_rut {
+  ma                    BigInt    @id @default(autoincrement())
+  ma_yeu_cau_rut        BigInt
+  loai_bang_chung       String    @db.VarChar(50)
+  duong_dan_tep         String    @db.VarChar(500)
+  ma_giao_dich_tham_chieu String? @db.VarChar(255)
+  ghi_chu               String?   @db.Text
+  ma_nguoi_tai          BigInt
+  thoi_diem_tai         DateTime  @default(now()) @db.Timestamptz
+
+  yeu_cau_rut           yeu_cau_rut @relation(fields: [ma_yeu_cau_rut], references: [ma])
+
+  @@index([ma_yeu_cau_rut])
+}
+
+// -----------------------------------------------------------------------------
+// NHẬT KÝ QUẢN TRỊ
+// -----------------------------------------------------------------------------
+
+model nhat_ky_quan_tri {
+  ma                    BigInt    @id @default(autoincrement())
+  ma_nguoi_thao_tac     BigInt
+  hanh_dong             String    @db.VarChar(100)
+  doi_tuong             String    @db.VarChar(100)
+  ma_doi_tuong          BigInt
+  trang_thai_truoc      String?   @db.VarChar(50)
+  trang_thai_sau        String?   @db.VarChar(50)
+  ly_do                 String?   @db.Text
+  ghi_chu               String?   @db.Text
+  dia_chi_ip            String?   @db.VarChar(50)
+  thoi_diem_thao_tac    DateTime  @default(now()) @db.Timestamptz
+
+  nguoi_thao_tac        nguoi_dung @relation(fields: [ma_nguoi_thao_tac], references: [ma])
+
+  @@index([doi_tuong, ma_doi_tuong])
+  @@index([ma_nguoi_thao_tac])
+  @@index([thoi_diem_thao_tac])
+}
+
+// -----------------------------------------------------------------------------
+// NHÓM LIÊN KẾT RÚT GỌN VÀ NHÀ XUẤT BẢN
+// -----------------------------------------------------------------------------
+
+model lien_ket_rut_gon {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_cong_khai              String    @unique @db.VarChar(40)
+  ma_nguoi_dung             BigInt
+  ma_ngan                   String    @unique @db.VarChar(50)
+  bi_danh                   String?   @unique @db.VarChar(255)
+  lien_ket_goc              String    @db.Text
+  lien_ket_du_phong         String?   @db.Text
+  trang_thai                String    @db.VarChar(50) // hoat_dong, tam_khoa, cho_duyet, het_han, loi
+  ly_do_trang_thai          String?   @db.Text
+  yeu_cau_xac_minh_truy_cap Boolean   @default(true)
+  cho_phep_chuyen_huong_du_phong Boolean @default(true)
+  thoi_diem_het_han         DateTime? @db.Timestamptz
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
+  ma_nguoi_dung_tao         BigInt?
+  ma_nguoi_dung_cap_nhat    BigInt?
+
+  nguoi_dung                nguoi_dung  @relation(fields: [ma_nguoi_dung], references: [ma])
+  su_kien_luot              su_kien_luot[]
+  nhat_ky                   nhat_ky_lien_ket_rut_gon[]
+
+  @@index([ma_nguoi_dung, thoi_diem_tao])
+  @@index([trang_thai])
+}
+
+model nhat_ky_lien_ket_rut_gon {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_lien_ket_rut_gon       BigInt
+  loai_su_kien              String    @db.VarChar(50)
+  du_lieu_truoc             String?   @db.Text
+  du_lieu_sau               String?   @db.Text
+  ly_do                     String?   @db.Text
+  nguon_tao                 String    @db.VarChar(50)
+  ma_nguoi_dung_thuc_hien   BigInt?
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+
+  lien_ket                  lien_ket_rut_gon @relation(fields: [ma_lien_ket_rut_gon], references: [ma])
+
+  @@index([ma_lien_ket_rut_gon, thoi_diem_tao])
+}
+
+// -----------------------------------------------------------------------------
+// NHÓM SỰ KIỆN LƯỢT TRUY CẬP 
+// -----------------------------------------------------------------------------
+
+model su_kien_luot {
+  ma                        BigInt    @id @default(autoincrement())
+  ma_cong_khai              String    @unique @db.VarChar(40)
+  ma_lien_ket_rut_gon       BigInt?
+  trang_thai                String    @db.VarChar(50) // moi_ghi_nhan, hop_le_tam_thoi, hop_le_da_chot, bi_loai...
+  ly_do_loai_chinh          String?   @db.VarChar(100)
+  yeu_cau_xac_minh          Boolean   @default(true)
+  xac_minh_hoan_tat         Boolean   @default(false)
+  thoi_luong_giay           Int?      
+  dia_chi_ip                String?   @db.VarChar(45)
+  quoc_gia                  String?   @db.VarChar(10)
+  trinh_duyet               String?   @db.VarChar(100)
+  he_dieu_hanh              String?   @db.VarChar(100)
+  thiet_bi                  String?   @db.VarChar(100)
+  nguon_truy_cap            String    @db.VarChar(50) // lien_ket_ngan
+  thoi_diem_nhan            DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_chot            DateTime? @db.Timestamptz
+  thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
+
+  lien_ket                  lien_ket_rut_gon? @relation(fields: [ma_lien_ket_rut_gon], references: [ma])
+
+  @@index([ma_lien_ket_rut_gon])
+  @@index([trang_thai, thoi_diem_nhan])
+  @@index([dia_chi_ip, thoi_diem_nhan])
+}
