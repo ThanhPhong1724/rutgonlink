@@ -12,7 +12,11 @@ import { DepositModule } from './deposit/deposit.module';
 import { WithdrawalModule } from './withdrawal/withdrawal.module';
 import { ShortLinkModule } from './short-link/short-link.module';
 import { RedirectModule } from './redirect/redirect.module';
+import { CampaignModule } from './campaign/campaign.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { AdminModule } from './admin/admin.module';
 import { RevenueService } from './cron/revenue.service';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -25,6 +29,10 @@ import { RevenueService } from './cron/revenue.service';
     WithdrawalModule,
     ShortLinkModule,
     RedirectModule,
+    CampaignModule,
+    DashboardModule,
+    AdminModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

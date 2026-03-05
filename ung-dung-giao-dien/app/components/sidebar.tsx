@@ -9,13 +9,18 @@ import {
     ArrowDownToLine,
     ArrowUpFromLine,
     User,
+    Users,
     Settings,
+    Sliders,
     CheckSquare,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Megaphone,
+    Package
 } from 'lucide-react';
 
 const menuR10 = [
     { href: '/', label: 'Bảng điều khiển', icon: LayoutDashboard },
+    { href: '/chien-dich', label: 'Chiến Dịch Traffic', icon: Megaphone },
     { href: '/nap-tien', label: 'Nạp số dư', icon: ArrowDownToLine },
     { href: '/ho-so', label: 'Thông tin cá nhân', icon: User },
 ];
@@ -29,8 +34,13 @@ const menuR20 = [
 
 const menuR30 = [
     { href: '/', label: 'Bảng điều khiển', icon: LayoutDashboard },
+    { href: '/admin/nguoi-dung', label: 'Quản lý tài khoản', icon: Users },
+    { href: '/admin/chien-dich', label: 'Quản lý chiến dịch', icon: Megaphone },
+    { href: '/admin/lien-ket', label: 'Quản lý link rút gọn', icon: LinkIcon },
     { href: '/admin/nap-tien', label: 'Duyệt nạp tiền', icon: CheckSquare },
     { href: '/admin/rut-tien', label: 'Duyệt rút tiền', icon: CheckSquare },
+    { href: '/admin/goi-thoi-gian', label: 'Cấu Hình Gói', icon: Package },
+    { href: '/admin/cau-hinh', label: 'Cấu hình hệ thống', icon: Sliders },
     { href: '/ho-so', label: 'Cấu hình Admin', icon: Settings },
 ];
 

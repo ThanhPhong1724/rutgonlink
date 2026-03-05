@@ -31,17 +31,30 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             // Handle Validation pipes and bad requests
             if (status === HttpStatus.BAD_REQUEST) {
                 ma_loi = ERROR_CODES.VALIDATION_ERROR;
-                thong_diep = 'Dữ liệu đầu vào không hợp lệ';
-                chi_tiet = exceptionResponse.message || exceptionResponse;
+                thong_diep = typeof exceptionResponse === 'string'
+                    ? exceptionResponse
+                    : (exceptionResponse.message || 'Dữ liệu đầu vào không hợp lệ');
+                chi_tiet = Array.isArray(exceptionResponse.message) ? exceptionResponse.message : null;
             } else if (status === HttpStatus.UNAUTHORIZED) {
                 ma_loi = ERROR_CODES.UNAUTHORIZED;
-                thong_diep = 'Vui lòng đăng nhập để tiếp tục';
+                thong_diep = typeof exceptionResponse === 'string'
+                    ? exceptionResponse
+                    : (exceptionResponse.message || 'Vui lòng đăng nhập để tiếp tục');
             } else if (status === HttpStatus.FORBIDDEN) {
                 ma_loi = ERROR_CODES.FORBIDDEN;
-                thong_diep = 'Bạn không có quyền thực hiện hành động này';
+                thong_diep = typeof exceptionResponse === 'string'
+                    ? exceptionResponse
+                    : (exceptionResponse.message || 'Bạn không có quyền thực hiện hành động này');
             } else if (status === HttpStatus.NOT_FOUND) {
                 ma_loi = ERROR_CODES.NOT_FOUND;
-                thong_diep = 'Tài nguyên không tồn tại';
+                thong_diep = typeof exceptionResponse === 'string'
+                    ? exceptionResponse
+                    : (exceptionResponse.message || 'Tài nguyên không tồn tại');
+            } else if (status === HttpStatus.CONFLICT) {
+                ma_loi = 'L_CONFLICT';
+                thong_diep = typeof exceptionResponse === 'string'
+                    ? exceptionResponse
+                    : (exceptionResponse.message || 'Dữ liệu bị trùng lặp');
             } else {
                 ma_loi = ERROR_CODES.BAD_REQUEST;
                 thong_diep = exception.message || 'Lỗi xử lý yêu cầu';

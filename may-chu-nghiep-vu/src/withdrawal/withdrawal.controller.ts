@@ -48,6 +48,20 @@ export class WithdrawalController {
         );
     }
 
+    /** R30: Lịch sử yêu cầu rút đã xử lý */
+    @Get('lich-su')
+    @UseGuards(RolesGuard)
+    @Roles('R30')
+    async lichSuDaXuLy(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string,
+    ) {
+        return this.withdrawalService.lichSuDaXuLy(
+            page ? parseInt(page) : 1,
+            limit ? parseInt(limit) : 20,
+        );
+    }
+
     /** R30: Duyệt yêu cầu rút */
     @Patch(':ma/duyet')
     @UseGuards(RolesGuard)

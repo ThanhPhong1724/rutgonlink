@@ -17,13 +17,15 @@ model nguoi_dung {
   loai_tai_khoan_mac_dinh   String    @db.VarChar(50)
   thu_dien_tu               String    @unique @db.VarChar(255)
   thu_dien_tu_da_xac_minh   Boolean   @default(false)
-  mat_khau_bam              String    @db.VarChar(500)
+  mat_khau_bam              String?   @db.VarChar(500)
   ten_hien_thi              String    @db.VarChar(255)
   so_dien_thoai             String?   @db.VarChar(50)
   cau_hinh_rut_tien         String?   @db.Text // JSON lưu Ngân hàng, STK, Tên chủ thẻ, Ví USDT
   ngon_ngu_mac_dinh         String    @db.VarChar(5) // vi or en
   mui_gio_mac_dinh          String    @db.VarChar(50)
   trang_thai                String    @db.VarChar(50)
+  google_id                 String?   @unique @db.VarChar(255)
+  phuong_thuc_dang_ky       String    @default("email") @db.VarChar(20) // "email" | "google"
   thoi_diem_dang_nhap_cuoi  DateTime? @db.Timestamptz
   thoi_diem_tao             DateTime  @default(now()) @db.Timestamptz
   thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
@@ -47,6 +49,7 @@ model nguoi_dung {
   yeu_cau_rut_tao           yeu_cau_rut[]
   nhat_ky_quan_tri_tao      nhat_ky_quan_tri[]
   lien_ket_tao              lien_ket_rut_gon[]
+  chien_dich_tao            chien_dich[]
 
   @@index([trang_thai])
   @@index([loai_tai_khoan_mac_dinh])
@@ -397,8 +400,91 @@ model su_kien_luot {
   thoi_diem_cap_nhat        DateTime  @updatedAt @db.Timestamptz
 
   lien_ket                  lien_ket_rut_gon? @relation(fields: [ma_lien_ket_rut_gon], references: [ma])
+  ma_xac_nhan_su_dung       ma_xac_nhan?
 
   @@index([ma_lien_ket_rut_gon])
   @@index([trang_thai, thoi_diem_nhan])
   @@index([dia_chi_ip, thoi_diem_nhan])
+}
+
+// -----------------------------------------------------------------------------
+// NHÓM GÓI THỜI GIAN VÀ CHIẾN DỊCH MUA TRAFFIC
+// -----------------------------------------------------------------------------
+
+model goi_thoi_gian {
+  ma                BigInt    @id @default(autoincrement())
+  ma_cong_khai      String    @unique @db.VarChar(40)
+  ten_goi           String    @db.VarChar(100)
+  thoi_gian_giay    Int
+  don_gia_mua       Decimal   @db.Decimal(19, 4) // Giá người mua trả / lượt
+  don_gia_ban       Decimal   @db.Decimal(19, 4) // Doanh thu người bán / lượt
+  don_vi_tien       String    @db.VarChar(10)
+  trang_thai        String    @db.VarChar(50) // hoat_dong, tam_ngung
+  thu_tu            Int       @default(0)
+  thoi_diem_tao     DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat DateTime @updatedAt @db.Timestamptz
+
+  chien_dich        chien_dich[]
+
+  @@index([trang_thai, thu_tu])
+}
+
+model chien_dich {
+  ma                    BigInt    @id @default(autoincrement())
+  ma_cong_khai          String    @unique @db.VarChar(40)
+  ma_nguoi_mua          BigInt
+  ma_goi                BigInt
+  ten_chien_dich        String    @db.VarChar(255)
+  lien_ket_trang_dich   String    @db.Text
+  tu_khoa               String    @db.Text     // JSON array
+  anh_minh_hoa_url      String?   @db.Text     // Link ảnh từ URL
+  anh_minh_hoa_file     String?   @db.VarChar(500) // Đường dẫn file upload
+  so_luot_mua           Int
+  so_luot_da_chay       Int       @default(0)
+  ngan_sach_tong        Decimal   @db.Decimal(19, 4)
+  ngan_sach_da_dung     Decimal   @default(0) @db.Decimal(19, 4)
+  trang_thai            String    @db.VarChar(50) // hoat_dong, tam_dung, hoan_thanh, da_huy
+  thoi_diem_bat_dau     DateTime  @db.Timestamptz
+  thoi_diem_ket_thuc    DateTime? @db.Timestamptz
+  thoi_diem_tao         DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat    DateTime  @updatedAt @db.Timestamptz
+
+  nguoi_mua             nguoi_dung     @relation(fields: [ma_nguoi_mua], references: [ma])
+  goi                   goi_thoi_gian  @relation(fields: [ma_goi], references: [ma])
+  ma_xac_nhan           ma_xac_nhan[]
+
+  @@index([ma_nguoi_mua, trang_thai])
+  @@index([trang_thai, so_luot_da_chay])
+}
+
+model ma_xac_nhan {
+  ma                BigInt    @id @default(autoincrement())
+  ma_cong_khai      String    @unique @db.VarChar(20) // Mã 6 ký tự người dùng nhập
+  ma_chien_dich     BigInt
+  dia_chi_ip        String?   @db.VarChar(45)
+  da_su_dung        Boolean   @default(false)
+  thoi_diem_het_han DateTime  @db.Timestamptz
+  thoi_diem_su_dung DateTime? @db.Timestamptz
+  ma_su_kien_luot   BigInt?   @unique // Lượt sử dụng mã này
+  thoi_diem_tao     DateTime  @default(now()) @db.Timestamptz
+
+  chien_dich        chien_dich    @relation(fields: [ma_chien_dich], references: [ma])
+  su_kien_luot      su_kien_luot? @relation(fields: [ma_su_kien_luot], references: [ma])
+
+  @@index([ma_chien_dich, da_su_dung])
+  @@index([thoi_diem_het_han])
+}
+
+// -----------------------------------------------------------------------------
+// CẤU HÌNH HỆ THỐNG (key-value)
+// -----------------------------------------------------------------------------
+
+model cau_hinh_he_thong {
+  ma                BigInt    @id @default(autoincrement())
+  khoa              String    @unique @db.VarChar(100) // e.g. "ty_gia_vnd_usdt", "don_gia_mua_mac_dinh"
+  gia_tri           String    @db.Text                 // e.g. "25000", "1500"
+  nhom              String    @db.VarChar(50)          // e.g. "tai_chinh", "he_thong"
+  mo_ta             String?   @db.VarChar(500)
+  thoi_diem_tao     DateTime  @default(now()) @db.Timestamptz
+  thoi_diem_cap_nhat DateTime @updatedAt @db.Timestamptz
 }

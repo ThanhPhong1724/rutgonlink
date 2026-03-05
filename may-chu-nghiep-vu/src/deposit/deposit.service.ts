@@ -18,7 +18,10 @@ export class DepositService {
         }
 
         const maHoaDon = randomUUID();
-        const noiDungThamChieu = `NAP-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        const cfg = await this.prisma.cau_hinh_he_thong.findUnique({ where: { khoa: 'thanh_toan_noi_dung' } });
+        const formatString = cfg?.gia_tri || 'NAP {ID}';
+        const shortId = Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+        const noiDungThamChieu = formatString.replace('{ID}', shortId);
         const thoiDiemHetHan = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
         const hoaDon = await this.prisma.hoa_don_nap.create({

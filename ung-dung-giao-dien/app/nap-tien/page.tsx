@@ -9,6 +9,7 @@ import {
     Landmark,
     Coins,
     Bitcoin,
+    CreditCard,
     RefreshCcw,
     History,
     AlertCircle,
@@ -39,23 +40,6 @@ const TRANG_THAI_MAP: Record<string, { label: string; color: string; icon: any }
     het_han: { label: 'Hết hạn', color: 'text-text-muted bg-surface-hover', icon: AlertCircle },
 };
 
-// Cấu hình thông tin nhận tiền
-const THANH_TOAN_CONFIG = {
-    ngan_hang: {
-        ten: 'Vietcombank',
-        stk: '9921991789',
-        chu_tk: 'TRAN NGOC TIEN',
-    },
-    usdt_trc20: {
-        mang: 'TRC20',
-        dia_chi: 'TBxoYtexCTM2r6oPfcxw5A6bszpWBd26uW',
-    },
-    usdt_bep20: {
-        mang: 'BEP20',
-        dia_chi: '0xc5786e7dfb02E39f3a974c0160b6c00Ad3546333',
-    },
-};
-
 export default function NapTienPage() {
     const { nguoiDung } = useAuth();
     const [soTien, setSoTien] = useState('');
@@ -65,7 +49,9 @@ export default function NapTienPage() {
     const [danhSach, setDanhSach] = useState<HoaDon[]>([]);
     const [dangTai, setDangTai] = useState(true);
     const [modalHoaDon, setModalHoaDon] = useState<HoaDon | null>(null);
-    const [tabThanhToan, setTabThanhToan] = useState<'ngan_hang' | 'usdt_trc20' | 'usdt_bep20'>('ngan_hang');
+    const [tabThanhToan, setTabThanhToan] = useState<'ngan_hang' | 'usdt' | 'paypal'>('ngan_hang');
+    const [cauHinh, setCauHinh] = useState<Record<string, string>>({});
+    const [minNap, setMinNap] = useState(100000);
 
     const taiDanhSach = async () => {
         setDangTai(true);
@@ -77,7 +63,18 @@ export default function NapTienPage() {
     };
 
     useEffect(() => {
-        if (nguoiDung) taiDanhSach();
+        if (nguoiDung) {
+            taiDanhSach();
+            apiClient.get('/api/v1/public/cau-hinh').then((res: any) => {
+                const configs = Array.isArray(res) ? res : [];
+                const parsed: Record<string, string> = {};
+                configs.forEach((c: any) => {
+                    if (c.khoa === 'nap_tien_toi_thieu_vnd') setMinNap(Number(c.gia_tri) || 100000);
+                    parsed[c.khoa] = c.gia_tri;
+                });
+                setCauHinh(parsed);
+            }).catch(() => { });
+        }
     }, [nguoiDung]);
 
     if (!nguoiDung) {
@@ -95,8 +92,13 @@ export default function NapTienPage() {
         e.preventDefault();
         setLoi('');
 
-        if (Number(soTien) < 1200000) {
-            setLoi('Số tiền nạp tối thiểu là 1,200,000 VNĐ');
+        const soTienNum = Number(soTien);
+        if (!soTien || soTienNum <= 0) {
+            setLoi('Vui lòng nhập số tiền muốn nạp.');
+            return;
+        }
+        if (soTienNum < minNap) {
+            setLoi(`Số tiền nạp tối thiểu là ${formatTien(minNap)}đ. Bạn đang nhập ${formatTien(soTienNum)}đ.`);
             return;
         }
 
@@ -126,7 +128,7 @@ export default function NapTienPage() {
     };
 
     const moModalThanhToan = (hd: HoaDon) => {
-        setTabThanhToan(hd.phuong_thuc_nap === 'usdt' ? 'usdt_trc20' : 'ngan_hang');
+        setTabThanhToan(hd.phuong_thuc_nap === 'usdt' ? 'usdt' : hd.phuong_thuc_nap === 'paypal' ? 'paypal' : 'ngan_hang');
         setModalHoaDon(hd);
     };
 
@@ -207,17 +209,47 @@ export default function NapTienPage() {
                                     <input
                                         type="number"
                                         value={soTien}
-                                        onChange={(e) => setSoTien(e.target.value)}
+                                        onChange={(e) => { setLoi(''); setSoTien(e.target.value); }}
                                         className="input-field text-lg font-bold py-3"
-                                        placeholder="Ví dụ: 2000000"
-                                        min="1200000"
-                                        required
+                                        placeholder="Nhập số tiền muốn nạp"
                                     />
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted font-bold text-sm">
                                         VNĐ
                                     </div>
                                 </div>
-                                <p className="text-xs text-text-muted text-right">Tối thiểu: 1,200,000đ</p>
+                                <p className="text-xs text-text-muted text-right">Tối thiểu: {formatTien(minNap)}đ</p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-semibold text-text-primary">
+                                    Phương thức thanh toán <span className="text-error">*</span>
+                                </label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPhuongThuc('ngan_hang')}
+                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all ${phuongThuc === 'ngan_hang' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-surface hover:bg-surface-hover text-text-secondary'}`}
+                                    >
+                                        <Landmark className="w-4 h-4" />
+                                        <span className="font-semibold text-sm">Ngân hàng</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPhuongThuc('usdt')}
+                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all ${phuongThuc === 'usdt' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-surface hover:bg-surface-hover text-text-secondary'}`}
+                                    >
+                                        <Bitcoin className="w-4 h-4" />
+                                        <span className="font-semibold text-sm">USDT</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPhuongThuc('paypal')}
+                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all ${phuongThuc === 'paypal' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-surface hover:bg-surface-hover text-text-secondary'}`}
+                                    >
+                                        <CreditCard className="w-4 h-4" />
+                                        <span className="font-semibold text-sm">PayPal</span>
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Ticket Summary */}
@@ -239,7 +271,7 @@ export default function NapTienPage() {
 
                             <button
                                 type="submit"
-                                disabled={dangXuLy || !soTien || Number(soTien) < 1200000}
+                                disabled={dangXuLy}
                                 className="btn-primary w-full py-3 text-base"
                             >
                                 {dangXuLy ? 'Đang tạo đơn...' : 'Tiến Hành Nạp Tiền'}
@@ -321,6 +353,10 @@ export default function NapTienPage() {
                                                         {hd.phuong_thuc_nap === 'ngan_hang' ? (
                                                             <span className="inline-flex items-center gap-1.5 text-sm font-medium">
                                                                 <Landmark className="w-4 h-4 text-indigo-500" /> Ngân hàng
+                                                            </span>
+                                                        ) : hd.phuong_thuc_nap === 'paypal' ? (
+                                                            <span className="inline-flex items-center gap-1.5 text-sm font-medium">
+                                                                <CreditCard className="w-4 h-4 text-blue-500" /> PayPal
                                                             </span>
                                                         ) : (
                                                             <span className="inline-flex items-center gap-1.5 text-sm font-medium">
@@ -412,21 +448,21 @@ export default function NapTienPage() {
                                             className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tabThanhToan === 'ngan_hang' ? 'bg-surface shadow-sm text-primary border border-border/50' : 'text-text-secondary hover:text-foreground'
                                                 }`}
                                         >
-                                            <Landmark className="w-4 h-4" /> Vietcombank
+                                            <Landmark className="w-4 h-4" /> Ngân hàng
                                         </button>
                                         <button
-                                            onClick={() => setTabThanhToan('usdt_trc20')}
-                                            className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tabThanhToan === 'usdt_trc20' ? 'bg-surface shadow-sm text-warning border border-border/50' : 'text-text-secondary hover:text-foreground'
+                                            onClick={() => setTabThanhToan('usdt')}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tabThanhToan === 'usdt' ? 'bg-surface shadow-sm text-primary border border-border/50' : 'text-text-secondary hover:text-foreground'
                                                 }`}
                                         >
-                                            <Bitcoin className="w-4 h-4" /> TRC20
+                                            <Bitcoin className="w-4 h-4" /> USDT
                                         </button>
                                         <button
-                                            onClick={() => setTabThanhToan('usdt_bep20')}
-                                            className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tabThanhToan === 'usdt_bep20' ? 'bg-surface shadow-sm text-warning border border-border/50' : 'text-text-secondary hover:text-foreground'
+                                            onClick={() => setTabThanhToan('paypal')}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tabThanhToan === 'paypal' ? 'bg-surface shadow-sm text-primary border border-border/50' : 'text-text-secondary hover:text-foreground'
                                                 }`}
                                         >
-                                            <Bitcoin className="w-4 h-4" /> BEP20
+                                            <CreditCard className="w-4 h-4" /> PayPal
                                         </button>
                                     </div>
                                 </div>
@@ -439,22 +475,24 @@ export default function NapTienPage() {
                                     <div className="p-3 bg-white rounded-xl border-2 border-border shadow-sm mb-3 relative group">
                                         {tabThanhToan === 'ngan_hang' ? (
                                             <img
-                                                src={`https://img.vietqr.io/image/VCB-${THANH_TOAN_CONFIG.ngan_hang.stk}-compact2.png?amount=${modalHoaDon.so_tien_yeu_cau}&addInfo=${modalHoaDon.noi_dung_tham_chieu}&accountName=${encodeURIComponent(THANH_TOAN_CONFIG.ngan_hang.chu_tk)}`}
-                                                alt="QR Vietcombank"
+                                                src={cauHinh.thanh_toan_ngan_hang_qr ? (cauHinh.thanh_toan_ngan_hang_qr.startsWith('/') ? `http://localhost:3001${cauHinh.thanh_toan_ngan_hang_qr}` : cauHinh.thanh_toan_ngan_hang_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${cauHinh.thanh_toan_ngan_hang_stk || 'Loading'} ${modalHoaDon.noi_dung_tham_chieu}`)}`}
+                                                alt="QR Ngân Hàng"
                                                 className="w-40 h-auto"
-                                                onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${THANH_TOAN_CONFIG.ngan_hang.stk} ${modalHoaDon.noi_dung_tham_chieu}`)}`; }}
+                                                onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${cauHinh.thanh_toan_ngan_hang_stk || 'Loading'} ${modalHoaDon.noi_dung_tham_chieu}`)}`; }}
                                             />
-                                        ) : tabThanhToan === 'usdt_trc20' ? (
+                                        ) : tabThanhToan === 'usdt' ? (
                                             <img
-                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${THANH_TOAN_CONFIG.usdt_trc20.dia_chi}`}
-                                                alt="QR USDT TRC20"
-                                                className="w-40 h-40"
+                                                src={cauHinh.thanh_toan_usdt_qr ? (cauHinh.thanh_toan_usdt_qr.startsWith('/') ? `http://localhost:3001${cauHinh.thanh_toan_usdt_qr}` : cauHinh.thanh_toan_usdt_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_usdt_vi || 'Loading')}`}
+                                                alt="QR USDT"
+                                                className="w-40 h-auto"
+                                                onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_usdt_vi || 'Loading')}`; }}
                                             />
                                         ) : (
                                             <img
-                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${THANH_TOAN_CONFIG.usdt_bep20.dia_chi}`}
-                                                alt="QR USDT BEP20"
-                                                className="w-40 h-40"
+                                                src={cauHinh.thanh_toan_paypal_qr ? (cauHinh.thanh_toan_paypal_qr.startsWith('/') ? `http://localhost:3001${cauHinh.thanh_toan_paypal_qr}` : cauHinh.thanh_toan_paypal_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_paypal_email || 'Loading')}`}
+                                                alt="QR PayPal"
+                                                className="w-40 h-auto"
+                                                onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_paypal_email || 'Loading')}`; }}
                                             />
                                         )}
                                         {['cho_thanh_toan', 'cho_chung_tu'].includes(modalHoaDon.trang_thai) === false && (
@@ -475,22 +513,22 @@ export default function NapTienPage() {
                                             <div>
                                                 <div className="text-xs text-text-muted font-medium mb-1">Ngân hàng hưởng thụ</div>
                                                 <div className="font-bold text-sm bg-surface-hover px-3 py-2 border border-border rounded-md">
-                                                    {THANH_TOAN_CONFIG.ngan_hang.ten}
+                                                    {cauHinh.thanh_toan_ngan_hang_ten || 'Đang tải...'}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-xs text-text-muted font-medium mb-1">Chủ tài khoản</div>
                                                 <div className="font-bold text-sm bg-surface-hover px-3 py-2 border border-border rounded-md">
-                                                    {THANH_TOAN_CONFIG.ngan_hang.chu_tk}
+                                                    {cauHinh.thanh_toan_ngan_hang_chu_tk || 'Đang tải...'}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-xs text-text-muted font-medium mb-1">Số tài khoản</div>
                                                 <div className="flex">
                                                     <div className="font-mono font-bold text-sm bg-surface-hover border border-border border-r-0 rounded-l-md px-3 py-2 flex-1">
-                                                        {THANH_TOAN_CONFIG.ngan_hang.stk}
+                                                        {cauHinh.thanh_toan_ngan_hang_stk || 'Đang tải...'}
                                                     </div>
-                                                    <button onClick={() => copyToClipboard(THANH_TOAN_CONFIG.ngan_hang.stk, 'Số Tài Khoản')} className="px-3 bg-surface border border-border rounded-r-md hover:bg-surface-hover text-text-muted transition-colors">
+                                                    <button onClick={() => copyToClipboard(cauHinh.thanh_toan_ngan_hang_stk, 'Số Tài Khoản')} className="px-3 bg-surface border border-border rounded-r-md hover:bg-surface-hover text-text-muted transition-colors">
                                                         <Copy className="w-4 h-4" />
                                                     </button>
                                                 </div>
@@ -507,26 +545,74 @@ export default function NapTienPage() {
                                                 </div>
                                             </div>
                                         </>
-                                    ) : (
+                                    ) : tabThanhToan === 'usdt' ? (
                                         <>
-                                            <div className="p-3 bg-warning-light/30 border border-warning-light rounded-lg">
-                                                <p className="text-sm text-warning-dark font-medium leading-relaxed">
-                                                    Vui lòng chuyển đúng mạng lưới <strong className="font-bold uppercase">{tabThanhToan.replace('usdt_', '')}</strong>. Việc chuyển sai mạng lưới sẽ gây mất tiền vĩnh viễn.
-                                                </p>
+                                            <div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Mạng lưới USDT</div>
+                                                <div className="font-bold text-sm bg-surface-hover px-3 py-2 border border-border rounded-md">
+                                                    {cauHinh.thanh_toan_usdt_mang || 'TRC20'}
+                                                </div>
                                             </div>
                                             <div>
-                                                <div className="text-xs text-text-muted font-medium mb-1">Địa chỉ ví USDT ({tabThanhToan.replace('usdt_', '').toUpperCase()})</div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Địa chỉ ví</div>
                                                 <div className="flex">
-                                                    <div className="font-mono text-[11px] sm:text-xs font-bold bg-surface-hover border border-border border-r-0 rounded-l-md px-2 sm:px-3 py-2 flex-1 break-all flex items-center">
-                                                        {tabThanhToan === 'usdt_trc20' ? THANH_TOAN_CONFIG.usdt_trc20.dia_chi : THANH_TOAN_CONFIG.usdt_bep20.dia_chi}
+                                                    <div className="font-mono font-bold text-xs bg-surface-hover border border-border border-r-0 rounded-l-md px-3 py-2 flex-1 break-all">
+                                                        {cauHinh.thanh_toan_usdt_vi || 'Đang tải...'}
                                                     </div>
-                                                    <button
-                                                        onClick={() => copyToClipboard(tabThanhToan === 'usdt_trc20' ? THANH_TOAN_CONFIG.usdt_trc20.dia_chi : THANH_TOAN_CONFIG.usdt_bep20.dia_chi, 'Địa chỉ ví')}
-                                                        className="px-3 bg-surface border border-border rounded-r-md hover:bg-surface-hover text-text-muted transition-colors shrink-0"
-                                                    >
+                                                    <button onClick={() => copyToClipboard(cauHinh.thanh_toan_usdt_vi, 'Địa chỉ ví USDT')} className="px-3 bg-surface border border-border rounded-r-md hover:bg-surface-hover text-text-muted transition-colors">
                                                         <Copy className="w-4 h-4" />
                                                     </button>
                                                 </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Số USDT cần nạp (Tham khảo)</div>
+                                                <div className="flex">
+                                                    <div className="font-mono font-bold text-sm bg-primary/5 text-primary border border-primary/30 border-r-0 rounded-l-md px-3 py-2 flex-1">
+                                                        {(Number(modalHoaDon.so_tien_yeu_cau) / Number(cauHinh.ty_gia_vnd_usdt || 25000)).toFixed(2)} USDT
+                                                    </div>
+                                                    <button onClick={() => copyToClipboard((Number(modalHoaDon.so_tien_yeu_cau) / Number(cauHinh.ty_gia_vnd_usdt || 25000)).toFixed(2), 'Số lượng USDT')} className="px-3 bg-primary border border-primary rounded-r-md hover:bg-primary-hover text-white transition-colors">
+                                                        <Copy className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                                <p className="text-[10px] text-text-muted mt-1">Tỷ giá: 1 USDT = {formatTien(cauHinh.ty_gia_vnd_usdt || 25000)} VNĐ</p>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Tên tài khoản PayPal</div>
+                                                <div className="font-bold text-sm bg-surface-hover px-3 py-2 border border-border rounded-md">
+                                                    {cauHinh.thanh_toan_paypal_ten || 'Đang tải...'}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Email PayPal</div>
+                                                <div className="flex">
+                                                    <div className="font-mono font-bold text-sm bg-surface-hover border border-border border-r-0 rounded-l-md px-3 py-2 flex-1 break-all">
+                                                        {cauHinh.thanh_toan_paypal_email || 'Đang tải...'}
+                                                    </div>
+                                                    <button onClick={() => copyToClipboard(cauHinh.thanh_toan_paypal_email, 'Email PayPal')} className="px-3 bg-surface border border-border rounded-r-md hover:bg-surface-hover text-text-muted transition-colors">
+                                                        <Copy className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Nội dung chuyển khoản (Bắt buộc)</div>
+                                                <div className="flex">
+                                                    <div className="font-mono font-bold text-sm bg-primary/5 text-primary border border-primary/30 border-r-0 rounded-l-md px-3 py-2 flex-1">
+                                                        {modalHoaDon.noi_dung_tham_chieu}
+                                                    </div>
+                                                    <button onClick={() => copyToClipboard(modalHoaDon.noi_dung_tham_chieu, 'Nội dung')} className="px-3 bg-primary border border-primary rounded-r-md hover:bg-primary-hover text-white transition-colors">
+                                                        <Copy className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-text-muted font-medium mb-1">Số USD tham khảo</div>
+                                                <div className="font-mono font-bold text-sm bg-primary/5 text-primary border border-primary/30 rounded-md px-3 py-2">
+                                                    {(Number(modalHoaDon.so_tien_yeu_cau) / Number(cauHinh.ty_gia_vnd_usdt || 25000)).toFixed(2)} USD
+                                                </div>
+                                                <p className="text-[10px] text-text-muted mt-1">Tỷ giá tham khảo: 1 USD ≈ {formatTien(cauHinh.ty_gia_vnd_usdt || 25000)} VNĐ</p>
                                             </div>
                                         </>
                                     )}

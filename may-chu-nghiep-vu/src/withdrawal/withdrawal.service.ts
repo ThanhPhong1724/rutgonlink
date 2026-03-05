@@ -133,6 +133,22 @@ export class WithdrawalService {
         return { yeu_cau: yeuCau, tong };
     }
 
+    /** R30: Lịch sử yêu cầu rút đã xử lý */
+    async lichSuDaXuLy(page = 1, limit = 20) {
+        const where = { trang_thai: { in: ['da_duyet', 'da_gui', 'hoan_thanh', 'tu_choi'] } };
+        const [yeuCau, tong] = await Promise.all([
+            this.prisma.yeu_cau_rut.findMany({
+                where,
+                orderBy: { thoi_diem_tao: 'desc' },
+                skip: (page - 1) * limit,
+                take: limit,
+                include: { nguoi_dung: { select: { ten_hien_thi: true, thu_dien_tu: true } } },
+            }),
+            this.prisma.yeu_cau_rut.count({ where }),
+        ]);
+        return { yeu_cau: yeuCau, tong };
+    }
+
     /** QR06 — Từ chối + hoàn số dư (ATOMIC) */
     async tuChoiRutTien(maNguoiXuLy: bigint, maYeuCau: string, lyDo: string) {
         if (!lyDo) throw new BadRequestException('Phải có lý do từ chối');

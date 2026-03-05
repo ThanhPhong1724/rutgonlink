@@ -65,6 +65,10 @@ export class UsersService {
             throw new NotFoundException('Không tìm thấy tài khoản');
         }
 
+        if (!nguoiDung.mat_khau_bam) {
+            throw new BadRequestException('Tài khoản này đăng nhập bằng Google, không có mật khẩu để thay đổi.');
+        }
+
         const matKhauDung = await bcrypt.compare(matKhauCu, nguoiDung.mat_khau_bam);
         if (!matKhauDung) {
             throw new BadRequestException('Mật khẩu hiện tại không đúng');

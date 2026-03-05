@@ -15,4 +15,8 @@ export class DangKyDto {
     @IsString()
     @IsIn(['R10', 'R20'], { message: 'Loại tài khoản phải là R10 (Người nhấp link) hoặc R20 (Nhà xuất bản)' })
     loai_tai_khoan: string;
+
+    @IsString()
+    @IsNotEmpty({ message: 'Vui lòng xác thực bạn không phải là robot' })
+    cf_turnstile_response: string;
 }

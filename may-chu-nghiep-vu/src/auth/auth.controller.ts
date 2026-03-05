@@ -9,8 +9,10 @@ export class AuthController {
     constructor(private authService: AuthService) { }
 
     @Post('dang-ky')
-    async dangKy(@Body() dto: DangKyDto) {
-        return this.authService.dangKy(dto);
+    async dangKy(@Body() dto: DangKyDto, @Req() req: any) {
+        const ip = req.ip;
+        const userAgent = req.headers?.['user-agent'];
+        return this.authService.dangKy(dto, ip, userAgent);
     }
 
     @Post('dang-nhap')
@@ -19,6 +21,14 @@ export class AuthController {
         const ip = req.ip;
         const userAgent = req.headers?.['user-agent'];
         return this.authService.dangNhap(dto, ip, userAgent);
+    }
+
+    @Post('google')
+    @HttpCode(HttpStatus.OK)
+    async dangNhapGoogle(@Body() body: { id_token: string; loai_tai_khoan?: string }, @Req() req: any) {
+        const ip = req.ip;
+        const userAgent = req.headers?.['user-agent'];
+        return this.authService.dangNhapGoogle(body.id_token, body.loai_tai_khoan, ip, userAgent);
     }
 
     @Post('dang-xuat')

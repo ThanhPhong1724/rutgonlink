@@ -51,6 +51,12 @@ export default function RutTienPage() {
     const [danhSach, setDanhSach] = useState<YeuCau[]>([]);
     const [dangTai, setDangTai] = useState(true);
 
+    // Dynamic config from admin
+    const [minVND, setMinVND] = useState(50000);
+    const [minUSDT, setMinUSDT] = useState(2);
+    const [tyGia, setTyGia] = useState(25500);
+    const [phiRut, setPhiRut] = useState(0);
+
     const taiDanhSach = async () => {
         setDangTai(true);
         try {
@@ -61,7 +67,19 @@ export default function RutTienPage() {
     };
 
     useEffect(() => {
-        if (nguoiDung) taiDanhSach();
+        if (nguoiDung) {
+            taiDanhSach();
+            // Fetch dynamic config
+            apiClient.get('/api/v1/admin/cau-hinh/public').then((res: any) => {
+                const configs = Array.isArray(res) ? res : [];
+                configs.forEach((c: any) => {
+                    if (c.khoa === 'rut_tien_toi_thieu_vnd') setMinVND(Number(c.gia_tri) || 50000);
+                    if (c.khoa === 'rut_tien_toi_thieu_usdt') setMinUSDT(Number(c.gia_tri) || 2);
+                    if (c.khoa === 'ty_gia_vnd_usdt') setTyGia(Number(c.gia_tri) || 25500);
+                    if (c.khoa === 'phi_rut_tien_phan_tram') setPhiRut(Number(c.gia_tri) || 0);
+                });
+            }).catch(() => { });
+        }
     }, [nguoiDung]);
 
     useEffect(() => {
@@ -95,14 +113,33 @@ export default function RutTienPage() {
         setLoi('');
         setThanhCong('');
 
-        if (Number(soTien) < 200000) {
-            setLoi('Số tiền rút tối thiểu là 200,000 VNĐ');
+        const soTienNum = Number(soTien);
+        const soDu = Number(nguoiDung?.so_du_kha_dung || 0);
+
+        // Validate từng case rõ ràng
+        if (!soTien || soTienNum <= 0) {
+            setLoi('Vui lòng nhập số tiền muốn rút.');
             return;
         }
-
-        if (Number(soTien) > Number(nguoiDung?.so_du_kha_dung || 0)) {
-            setLoi('Số dư không đủ để thực hiện yêu cầu này');
+        if (soTienNum < minVND) {
+            setLoi(`Số tiền rút tối thiểu là ${formatTien(minVND)}đ. Bạn đang nhập ${formatTien(soTienNum)}đ.`);
             return;
+        }
+        if (soDu <= 0) {
+            setLoi('Số dư khả dụng hiện tại là 0đ. Bạn cần có doanh thu trước khi rút tiền.');
+            return;
+        }
+        if (soTienNum > soDu) {
+            setLoi(`Số dư không đủ. Bạn chỉ có thể rút tối đa ${formatTien(soDu)}đ.`);
+            return;
+        }
+        if (phuongThuc === 'ngan_hang') {
+            if (!tenNganHang.trim()) { setLoi('Vui lòng nhập tên ngân hàng.'); return; }
+            if (!soTaiKhoan.trim()) { setLoi('Vui lòng nhập số tài khoản.'); return; }
+            if (!tenChuTK.trim()) { setLoi('Vui lòng nhập tên chủ tài khoản.'); return; }
+        } else {
+            if (!tenNganHang.trim()) { setLoi('Vui lòng chọn mạng (TRC20, BEP20...).'); return; }
+            if (!soTaiKhoan.trim()) { setLoi('Vui lòng nhập địa chỉ ví USDT.'); return; }
         }
 
         setDangXuLy(true);
@@ -112,16 +149,16 @@ export default function RutTienPage() {
                 : { dia_chi_vi: soTaiKhoan, mang: tenNganHang };
 
             await apiClient.post('/api/v1/rut-tien/tao-yeu-cau', {
-                so_tien: Number(soTien),
+                so_tien: soTienNum,
                 phuong_thuc: phuongThuc,
                 thong_tin_nhan_tien: thongTinNhanTien,
             });
 
             setSoTien('');
-            setThanhCong('Tạo yêu cầu rút tiền thành công. Vui lòng chờ admin xử lý.');
+            setThanhCong(`Yêu cầu rút ${formatTien(soTienNum)}đ đã được tạo thành công! Admin sẽ xử lý trong 1-3 ngày làm việc.`);
             taiDanhSach();
         } catch (err: any) {
-            setLoi(err.thong_diep || err.message || 'Lỗi tạo yêu cầu rút tiền');
+            setLoi(err.thong_diep || err.message || 'Lỗi tạo yêu cầu rút tiền. Vui lòng thử lại sau.');
         } finally {
             setDangXuLy(false);
         }
@@ -190,12 +227,9 @@ export default function RutTienPage() {
                                     <input
                                         type="number"
                                         value={soTien}
-                                        onChange={(e) => setSoTien(e.target.value)}
+                                        onChange={(e) => { setLoi(''); setSoTien(e.target.value); }}
                                         className="input-field text-lg font-bold py-3 pr-14"
-                                        placeholder="Tối thiểu 200,000"
-                                        min="200000"
-                                        max={nguoiDung?.so_du_kha_dung || 0}
-                                        required
+                                        placeholder="Nhập số tiền muốn rút"
                                     />
                                     <div className="absolute right-0 top-0 bottom-0 flex items-center pr-3">
                                         <button
@@ -208,7 +242,7 @@ export default function RutTienPage() {
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-center text-xs mt-1">
-                                    <span className="text-text-muted">Tối thiểu: 200,000đ</span>
+                                    <span className="text-text-muted">Tối thiểu: {formatTien(minVND)}đ · Tối đa: {formatTien(nguoiDung?.so_du_kha_dung || 0)}đ</span>
                                     {soTien && (
                                         <span className={`font-medium ${Number(soTien) > Number(nguoiDung.so_du_kha_dung || 0) ? 'text-error' : 'text-success'}`}>
                                             Còn lại: {formatTien(Math.max(0, Number(nguoiDung.so_du_kha_dung || 0) - Number(soTien)))}đ
@@ -262,7 +296,7 @@ export default function RutTienPage() {
                                                 </div>
                                                 <input type="text" value={tenNganHang} onChange={(e) => setTenNganHang(e.target.value)}
                                                     className="input-field pl-9 text-sm"
-                                                    placeholder="Ví dụ: Vietcombank, MB Bank..." required />
+                                                    placeholder="Ví dụ: Vietcombank, MB Bank..." />
                                             </div>
                                         </div>
                                         <div className="space-y-1.5">
@@ -273,14 +307,14 @@ export default function RutTienPage() {
                                                 </div>
                                                 <input type="text" value={soTaiKhoan} onChange={(e) => setSoTaiKhoan(e.target.value)}
                                                     className="input-field pl-9 text-sm font-mono"
-                                                    placeholder="0123456789" required />
+                                                    placeholder="0123456789" />
                                             </div>
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="block text-xs font-medium text-text-secondary">Tên chủ tài khoản <span className="text-error">*</span></label>
                                             <input type="text" value={tenChuTK} onChange={(e) => setTenChuTK(e.target.value.toUpperCase())}
                                                 className="input-field text-sm font-semibold"
-                                                placeholder="NGUYEN VAN A" required />
+                                                placeholder="NGUYEN VAN A" />
                                             <p className="text-[10px] text-text-muted">Nhập IN HOA KHÔNG DẤU</p>
                                         </div>
                                     </>
@@ -294,9 +328,9 @@ export default function RutTienPage() {
                                                 </div>
                                                 <input type="text" value={tenNganHang} onChange={(e) => setTenNganHang(e.target.value.toUpperCase())}
                                                     className="input-field pl-9 text-sm font-mono font-bold text-warning-dark"
-                                                    placeholder="TRC20, BEP20, ERC20..." required />
+                                                    placeholder="TRC20, BEP20, ERC20..." />
                                             </div>
-                                            <p className="text-[10px] text-warning-dark font-medium">Quy đổi tỷ giá tham khảo: 1 USDT = 25,500 VNĐ</p>
+                                            <p className="text-[10px] text-warning-dark font-medium">Quy đổi tỷ giá tham khảo: 1 USDT = {formatTien(tyGia)} VNĐ</p>
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="block text-xs font-medium text-text-secondary">Địa chỉ ví USDT <span className="text-error">*</span></label>
@@ -306,7 +340,7 @@ export default function RutTienPage() {
                                                 </div>
                                                 <input type="text" value={soTaiKhoan} onChange={(e) => setSoTaiKhoan(e.target.value)}
                                                     className="input-field pl-9 text-sm font-mono"
-                                                    placeholder="T..." required />
+                                                    placeholder="T..." />
                                             </div>
                                         </div>
                                     </>
@@ -315,7 +349,7 @@ export default function RutTienPage() {
 
                             <button
                                 type="submit"
-                                disabled={dangXuLy || !soTien || Number(soTien) < 200000 || Number(soTien) > Number(nguoiDung?.so_du_kha_dung || 0)}
+                                disabled={dangXuLy}
                                 className="btn-primary w-full py-3 text-base flex justify-center items-center gap-2"
                             >
                                 {dangXuLy ? (

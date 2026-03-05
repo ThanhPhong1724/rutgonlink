@@ -41,8 +41,8 @@ async function main() {
         },
     });
 
-    // Gán vai trò R40 cho admin
-    const adminRoleId = rolesMap.get('R40');
+    // Gán vai trò R30 cho admin (đã downgrade từ R40)
+    const adminRoleId = rolesMap.get('R30');
     if (adminRoleId) {
         await prisma.gan_vai_tro_nguoi_dung.upsert({
             where: {
@@ -58,7 +58,28 @@ async function main() {
                 ma_vai_tro: adminRoleId,
                 trang_thai: 'hoat_dong',
                 thoi_diem_hieu_luc_tu: new Date('2025-01-01T00:00:00.000Z'),
-                ma_nguoi_dung_tao: adminUser.ma, // Admin tự gán vai trò của chính mình cho việc seed này
+                ma_nguoi_dung_tao: adminUser.ma,
+            },
+        });
+    }
+
+    // Seed gói thời gian mặc định
+    console.log('Seeding default time packages...');
+    const goiMacDinh = [
+        { ma_cong_khai: 'goi_70s', ten_goi: '70 giây', thoi_gian_giay: 70, don_gia_mua: 1200, don_gia_ban: 500, thu_tu: 1 },
+        { ma_cong_khai: 'goi_90s', ten_goi: '90 giây', thoi_gian_giay: 90, don_gia_mua: 1400, don_gia_ban: 500, thu_tu: 2 },
+        { ma_cong_khai: 'goi_120s', ten_goi: '120 giây', thoi_gian_giay: 120, don_gia_mua: 1500, don_gia_ban: 500, thu_tu: 3 },
+        { ma_cong_khai: 'goi_150s', ten_goi: '150 giây', thoi_gian_giay: 150, don_gia_mua: 1700, don_gia_ban: 500, thu_tu: 4 },
+    ];
+
+    for (const goi of goiMacDinh) {
+        await prisma.goi_thoi_gian.upsert({
+            where: { ma_cong_khai: goi.ma_cong_khai },
+            update: { don_gia_mua: goi.don_gia_mua, don_gia_ban: goi.don_gia_ban },
+            create: {
+                ...goi,
+                don_vi_tien: 'VND',
+                trang_thai: 'hoat_dong',
             },
         });
     }

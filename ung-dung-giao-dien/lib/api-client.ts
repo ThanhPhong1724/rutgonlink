@@ -54,9 +54,17 @@ apiClient.interceptors.response.use(
                 ma_truy_vet: data.ma_truy_vet || '',
             };
 
-            // NV-FE-CORE-001 yêu cầu: Chưa chuyển hướng tự động 401 về trang đăng nhập
-            if (error.response.status === 401) {
-                console.warn('Lỗi 401: Vui lòng đăng nhập (chưa chuyển hướng)');
+            // Phiên hết hạn → xóa token + chuyển về đăng nhập
+            // Nhưng KHÔNG xóa/redirect nếu đang ở trang đăng nhập/đăng ký (để hiển thị lỗi đúng)
+            if (error.response.status === 401 && typeof window !== 'undefined') {
+                const path = window.location.pathname;
+                const isAuthPage = path === '/dang-nhap' || path === '/dang-ky';
+                if (!isAuthPage) {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    localStorage.removeItem('nguoi_dung');
+                    window.location.href = '/dang-nhap';
+                }
             }
         }
 
