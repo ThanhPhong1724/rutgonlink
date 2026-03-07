@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, Globe, DollarSign, LayoutList, Calendar, Hash, Image as ImageIcon, CheckCircle, Package, Search } from 'lucide-react';
 import apiClient from '../../lib/api-client';
+import { BACKEND_URL } from '../../lib/api-client';
 
 interface ChiTietChienDichModalProps {
     isOpen: boolean;
@@ -172,7 +173,7 @@ export default function ChiTietChienDichModal({ isOpen, onClose, maCongKhai, isA
                                     <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3 flex items-center gap-1.5"><ImageIcon className="w-4 h-4" /> Hình Ảnh Minh Họa Kết Quả</h3>
                                     <div className="flex justify-center bg-surface-hover rounded-xl border border-border p-2">
                                         <img
-                                            src={chiTiet.anh_minh_hoa_file ? `http://localhost:3001${chiTiet.anh_minh_hoa_file}` : chiTiet.anh_minh_hoa_url}
+                                            src={chiTiet.anh_minh_hoa_file ? `${BACKEND_URL}${chiTiet.anh_minh_hoa_file}` : chiTiet.anh_minh_hoa_url}
                                             alt="Minh họa"
                                             className="max-h-64 object-contain rounded"
                                             onError={(e) => (e.currentTarget.style.display = 'none')}

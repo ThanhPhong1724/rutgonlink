@@ -20,13 +20,13 @@ export class AuthService {
         private walletService: WalletService,
     ) {
         this.googleClient = new OAuth2Client(
-            this.configService.get('GOOGLE_CLIENT_ID', '298818615984-jnb56bh25gnq297e7bnlonbtqmcht2ij.apps.googleusercontent.com'),
+            this.configService.getOrThrow('GOOGLE_CLIENT_ID'),
         );
     }
 
     async verifyTurnstile(token: string, ip?: string) {
         // Use testing secret key by default or from env
-        const secret = this.configService.get<string>('TURNSTILE_SECRET_KEY') || '1x0000000000000000000000000000000AA';
+        const secret = this.configService.getOrThrow<string>('TURNSTILE_SECRET_KEY');
         const formData = new URLSearchParams();
         formData.append('secret', secret);
         formData.append('response', token);
@@ -205,11 +205,11 @@ export class AuthService {
 
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync(payload, {
-                secret: this.configService.get('JWT_SECRET', 'dev-secret-key-change-in-production'),
+                secret: this.configService.getOrThrow('JWT_SECRET'),
                 expiresIn: '15m',
             }),
             this.jwtService.signAsync(payload, {
-                secret: this.configService.get('JWT_REFRESH_SECRET', 'dev-refresh-secret-key'),
+                secret: this.configService.getOrThrow('JWT_REFRESH_SECRET'),
                 expiresIn: '7d',
             }),
         ]);
@@ -224,7 +224,7 @@ export class AuthService {
         try {
             const ticket = await this.googleClient.verifyIdToken({
                 idToken,
-                audience: this.configService.get('GOOGLE_CLIENT_ID', '298818615984-jnb56bh25gnq297e7bnlonbtqmcht2ij.apps.googleusercontent.com'),
+                audience: this.configService.getOrThrow('GOOGLE_CLIENT_ID'),
             });
             payload = ticket.getPayload();
         } catch {

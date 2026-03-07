@@ -8,8 +8,10 @@ export interface ApiError {
     ma_truy_vet?: string;
 }
 
+export const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 const apiClient: AxiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+    baseURL: BACKEND_URL,
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',

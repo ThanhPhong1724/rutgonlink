@@ -24,6 +24,7 @@ import {
     Loader2,
 } from 'lucide-react';
 import ChiTietChienDichModal from '../components/ChiTietChienDichModal';
+import { BACKEND_URL } from '../../lib/api-client';
 
 interface ChienDich {
     ma_cong_khai: string;
@@ -88,7 +89,7 @@ export default function ChienDichPage() {
     };
 
     const copyEmbedCode = (maCongKhai: string) => {
-        const baseUrl = typeof window !== 'undefined' ? window.location.origin.replace(':3000', ':3001') : 'http://localhost:3001';
+        const baseUrl = BACKEND_URL;
         const code = `<div style="display:flex;justify-content:center;">\n<div id="rgl-embed"></div>\n<script src="${baseUrl}/api/v1/embed/${maCongKhai}/embed.js"></script>\n</div>`;
         navigator.clipboard.writeText(code);
         setCopied(maCongKhai);
@@ -170,7 +171,7 @@ export default function ChienDichPage() {
                         const tt = TRANG_THAI_MAP[cd.trang_thai] || { label: cd.trang_thai, color: 'text-text-muted', bg: 'bg-surface-hover' };
                         const phanTram = cd.so_luot_mua > 0 ? Math.round((cd.so_luot_da_chay / cd.so_luot_mua) * 100) : 0;
                         const isExpanded = expandedCode === cd.ma_cong_khai;
-                        const baseUrl = typeof window !== 'undefined' ? window.location.origin.replace(':3000', ':3001') : 'http://localhost:3001';
+                        const baseUrl = BACKEND_URL;
 
                         return (
                             <div key={cd.ma_cong_khai} className="bg-surface rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow">

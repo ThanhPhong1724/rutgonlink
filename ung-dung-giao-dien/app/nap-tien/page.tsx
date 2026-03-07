@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { BACKEND_URL } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-context';
 import apiClient from '../../lib/api-client';
 import Link from 'next/link';
@@ -475,21 +476,21 @@ export default function NapTienPage() {
                                     <div className="p-3 bg-white rounded-xl border-2 border-border shadow-sm mb-3 relative group">
                                         {tabThanhToan === 'ngan_hang' ? (
                                             <img
-                                                src={cauHinh.thanh_toan_ngan_hang_qr ? (cauHinh.thanh_toan_ngan_hang_qr.startsWith('/') ? `http://localhost:3001${cauHinh.thanh_toan_ngan_hang_qr}` : cauHinh.thanh_toan_ngan_hang_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${cauHinh.thanh_toan_ngan_hang_stk || 'Loading'} ${modalHoaDon.noi_dung_tham_chieu}`)}`}
+                                                src={cauHinh.thanh_toan_ngan_hang_qr ? (cauHinh.thanh_toan_ngan_hang_qr.startsWith('/') ? `${BACKEND_URL}${cauHinh.thanh_toan_ngan_hang_qr}` : cauHinh.thanh_toan_ngan_hang_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${cauHinh.thanh_toan_ngan_hang_stk || 'Loading'} ${modalHoaDon.noi_dung_tham_chieu}`)}`}
                                                 alt="QR Ngân Hàng"
                                                 className="w-40 h-auto"
                                                 onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${cauHinh.thanh_toan_ngan_hang_stk || 'Loading'} ${modalHoaDon.noi_dung_tham_chieu}`)}`; }}
                                             />
                                         ) : tabThanhToan === 'usdt' ? (
                                             <img
-                                                src={cauHinh.thanh_toan_usdt_qr ? (cauHinh.thanh_toan_usdt_qr.startsWith('/') ? `http://localhost:3001${cauHinh.thanh_toan_usdt_qr}` : cauHinh.thanh_toan_usdt_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_usdt_vi || 'Loading')}`}
+                                                src={cauHinh.thanh_toan_usdt_qr ? (cauHinh.thanh_toan_usdt_qr.startsWith('/') ? `${BACKEND_URL}${cauHinh.thanh_toan_usdt_qr}` : cauHinh.thanh_toan_usdt_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_usdt_vi || 'Loading')}`}
                                                 alt="QR USDT"
                                                 className="w-40 h-auto"
                                                 onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_usdt_vi || 'Loading')}`; }}
                                             />
                                         ) : (
                                             <img
-                                                src={cauHinh.thanh_toan_paypal_qr ? (cauHinh.thanh_toan_paypal_qr.startsWith('/') ? `http://localhost:3001${cauHinh.thanh_toan_paypal_qr}` : cauHinh.thanh_toan_paypal_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_paypal_email || 'Loading')}`}
+                                                src={cauHinh.thanh_toan_paypal_qr ? (cauHinh.thanh_toan_paypal_qr.startsWith('/') ? `${BACKEND_URL}${cauHinh.thanh_toan_paypal_qr}` : cauHinh.thanh_toan_paypal_qr) : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_paypal_email || 'Loading')}`}
                                                 alt="QR PayPal"
                                                 className="w-40 h-auto"
                                                 onError={(e) => { (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cauHinh.thanh_toan_paypal_email || 'Loading')}`; }}

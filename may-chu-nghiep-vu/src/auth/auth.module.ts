@@ -14,7 +14,7 @@ import { WalletModule } from '../wallet/wallet.module';
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
-                secret: configService.get('JWT_SECRET', 'dev-secret-key-change-in-production'),
+                secret: configService.getOrThrow('JWT_SECRET'),
                 signOptions: { expiresIn: '15m' },
             }),
             inject: [ConfigService],

@@ -23,6 +23,7 @@ import {
     Banknote
 } from 'lucide-react';
 import Link from 'next/link';
+import { BACKEND_URL } from '../../../lib/api-client';
 
 interface ChienDichData {
     ma_cong_khai: string;
@@ -170,7 +171,7 @@ export default function RedirectPage() {
 
     // ======== BƯỚC 1: KIỂM TRA BOT (TURNSTILE) ========
     if (trangThai === 'kiem_tra') {
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
                 <div className="max-w-xl w-full">
@@ -311,7 +312,7 @@ export default function RedirectPage() {
                                                 <ImageIcon className="w-4 h-4 text-gray-400" />
                                                 <span className="text-xs font-medium text-gray-600">Hình ảnh trang web cần tìm</span>
                                             </div>
-                                            <img src={chienDich.anh_minh_hoa.startsWith('/') ? `http://localhost:3001${chienDich.anh_minh_hoa}` : chienDich.anh_minh_hoa} alt="Minh họa kết quả tìm kiếm" className="w-full object-cover" />
+                                            <img src={chienDich.anh_minh_hoa.startsWith('/') ? `${BACKEND_URL}${chienDich.anh_minh_hoa}` : chienDich.anh_minh_hoa} alt="Minh họa kết quả tìm kiếm" className="w-full object-cover" />
                                         </div>
                                     )}
                                 </div>

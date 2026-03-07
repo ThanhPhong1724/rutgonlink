@@ -11,8 +11,8 @@ declare global {
     interface Window { google: any; }
 }
 
-const GOOGLE_CLIENT_ID = '298818615984-jnb56bh25gnq297e7bnlonbtqmcht2ij.apps.googleusercontent.com';
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
 export default function DangKyPage() {
     const { dangKy, dangNhapGoogle } = useAuth();

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth-context';
 import apiClient from '../../../lib/api-client';
 import {
+import { BACKEND_URL } from '../../../lib/api-client';
     Megaphone,
     ArrowLeft,
     Clock,
@@ -286,7 +287,7 @@ export default function TaoChienDichPage() {
                             <div className="mt-3 border border-border bg-surface-hover rounded-lg overflow-hidden flex justify-center p-2 relative">
                                 <span className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded">Preview</span>
                                 <img
-                                    src={anhMinhHoaFile ? `http://localhost:3001${anhMinhHoaFile}` : anhMinhHoaUrl}
+                                    src={anhMinhHoaFile ? `${BACKEND_URL}${anhMinhHoaFile}` : anhMinhHoaUrl}
                                     alt="Preview"
                                     className="max-h-48 object-contain rounded shadow-sm"
                                     onError={(e) => (e.currentTarget.style.display = 'none')}

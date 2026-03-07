@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import apiClient from '../../../lib/api-client';
 import { Sliders, Save, Loader2, RefreshCw, DollarSign, Percent, Wallet, Building, Image as ImageIcon, Phone, FileText, Send, UploadCloud } from 'lucide-react';
+import { BACKEND_URL } from '../../../lib/api-client';
 
 interface ConfigItem {
     khoa: string;
@@ -173,10 +174,10 @@ export default function CauHinhPage() {
                                             <div className="flex items-center gap-2">
                                                 {editValues[c.khoa] && (
                                                     <img
-                                                        src={editValues[c.khoa].startsWith('/') ? `http://localhost:3001${editValues[c.khoa]}` : editValues[c.khoa]}
+                                                        src={editValues[c.khoa].startsWith('/') ? `${BACKEND_URL}${editValues[c.khoa]}` : editValues[c.khoa]}
                                                         alt="QR"
                                                         className="w-8 h-8 object-cover rounded border cursor-pointer hover:opacity-80"
-                                                        onClick={() => window.open(editValues[c.khoa].startsWith('/') ? `http://localhost:3001${editValues[c.khoa]}` : editValues[c.khoa], '_blank')}
+                                                        onClick={() => window.open(editValues[c.khoa].startsWith('/') ? `${BACKEND_URL}${editValues[c.khoa]}` : editValues[c.khoa], '_blank')}
                                                         title="Bấm để xem ảnh lớn"
                                                     />
                                                 )}
