@@ -110,48 +110,70 @@ npm install
 
 ---
 
+## 5. Cấu Hình Biến Môi Trường (.env)
+
+Đây là bước quan trọng nhất. Project sử dụng một file `.env` duy nhất tại thư mục gốc để quản lý toàn bộ hệ thống.
+
 ```bash
-# Tất cả biến môi trường của toàn bộ project CHỈ CẦN để ở đây
 nano ~/rutgonlink/.env
 ```
 
-Dán nội dung sau (chỉnh sửa giá trị phù hợp):
+### 5.1 Bảng tra cứu các Key (100% đầy đủ)
+
+| Nhóm | Biến (Key) | Ý nghĩa | Ví dụ / Cách lấy |
+|---|---|---|---|
+| **DB** | `DATABASE_URL` | Chuỗi kết nối PostgreSQL | `postgresql://admin:password123@localhost:5432/rutgonlink_dev?schema=public` |
+| **Cache** | `REDIS_HOST` | Địa chỉ máy chủ Redis | `localhost` |
+| **Cache** | `REDIS_PORT` | Cổng Redis | `6379` |
+| **App** | `PORT` | Cổng chạy Backend | `3001` |
+| **Bảo mật** | `JWT_SECRET` | Khóa ký Token truy cập (RẤT QUAN TRỌNG) | Chạy `openssl rand -base64 48` để tạo |
+| **Bảo mật** | `JWT_REFRESH_SECRET` | Khóa ký Token làm mới | Chạy `openssl rand -base64 48` để tạo |
+| **Bảo mật** | `JWT_EXPIRES_IN` | Thời gian hết hạn Access Token | `7d` (7 ngày) |
+| **Tên miền** | `NEXT_PUBLIC_API_URL` | Link API (expose ra browser) | `https://trafficuser.live` (Có https) |
+| **Tên miền** | `NEXT_PUBLIC_SITE_URL` | Link Web (expose ra browser) | `https://trafficuser.live` (Có https) |
+| **Google** | `GOOGLE_CLIENT_ID` | OAuth Client ID (Dùng cho Backend) | Lấy từ Google Cloud Console |
+| **Google** | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | OAuth Client ID (Dùng cho Frontend) | Giống hệt cái trên |
+| **Captcha** | `TURNSTILE_SECRET_KEY` | Secret Key (Dùng cho Backend) | Cloudflare → Turnstile |
+| **Captcha** | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Site Key (Dùng cho Frontend) | Cloudflare → Turnstile |
+
+### 5.2 Mẫu File .env chuẩn (100% đầy đủ)
+
+Dán nội dung sau vào file `~/rutgonlink/.env` và thay đổi các giá trị thực tế:
 
 ```env
-# ═══════════ DATABASE ═══════════
-DATABASE_URL="postgresql://admin:password123@localhost:5432/rutgonlink_dev?schema=public"
-
-# ═══════════ REDIS ═══════════
+# --- DATABASE & REDIS ---
+DATABASE_URL="postgresql://admin:rjN#th#R6fvw@localhost:5432/rutgonlink_dev?schema=public"
 REDIS_HOST=localhost
 REDIS_PORT=6379
 
-# ═══════════ BACKEND ═══════════
+# --- BACKEND AUTH (NestJS) ---
 PORT=3001
-JWT_SECRET=THAY_BANG_CHUOI_NGAU_NHIEN_DAI
+JWT_SECRET=THAY_BANG_CHUOI_RAND_MOI
+JWT_REFRESH_SECRET=THAY_BANG_CHUOI_RAND_MOI_KHAC
 JWT_EXPIRES_IN=7d
 
-# ═══════════ FRONTEND ═══════════
+# --- GOOGLE OAUTH ---
+GOOGLE_CLIENT_ID=298818615984-jnb56bh25gnq297e7bnlonbtqmcht2ij.apps.googleusercontent.com
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=298818615984-jnb56bh25gnq297e7bnlonbtqmcht2ij.apps.googleusercontent.com
+
+# --- CLOUDFLARE TURNSTILE ---
+# LƯU Ý: Phải tạo Site mới trong Cloudflare Turnstile cho domain "trafficuser.live"
+TURNSTILE_SECRET_KEY=0x4AAAAAA... (Lấy mã bí mật)
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAA... (Lấy mã công khai)
+
+# --- PUBLIC URLS ---
 NEXT_PUBLIC_API_URL=https://trafficuser.live
 NEXT_PUBLIC_SITE_URL=https://trafficuser.live
-
-# ═══════════ GOOGLE AUTH ═══════════
-GOOGLE_CLIENT_ID=298818615984-jnb56bh25gnq297e7bnlonbtqmcht2ij.apps.googleusercontent.com
-
-# ═══════════ CLOUDFLARE TURNSTILE ═══════════
-TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
 ```
 
 > [!IMPORTANT]
-> - Tạo `JWT_SECRET` bằng lệnh: `openssl rand -base64 48` rồi dán vào.
-> - Nếu sau này trỏ domain, thay `http://68.178.161.123` bằng `https://trafficseo.online`.
-> - **Lấy Key Cloudflare Turnstile thật (Chống Bot):**
->   1. Đăng nhập Cloudflare → Nhìn menu bên trái chọn **Turnstile**.
->   2. Bấm **Add Site** (Thêm trang web) → Đặt tên: `Traffict SEO` → Nhập domain: `trafficseo.online`.
->   3. Nhấn Create.
->   4. Copy **Site Key** dán vào `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
->   5. Copy **Secret Key** dán vào `TURNSTILE_SECRET_KEY`.
->   _(Lưu ý: Key `1x000...` trong mẫu chỉ là key dùng tạm để lập trình, trên màn hình sẽ luôn hiện chữ "Chỉ để kiểm tra...". Khi lên production bắt buộc phải thay key thật ở bước này thì dòng chữ đỏ đó mới biến mất)._
+> **Cách tạo SiteKey Turnstile cho Domain mới:**
+> 1. Truy cập Cloudflare Dashboard → **Turnstile**.
+> 2. Bấm **Add Site**.
+> 3. Widget Name: `Traffict User`.
+> 4. Domain: Thêm `trafficuser.live` vào danh sách.
+> 5. **Widget Type:** Chọn `Managed` (Khuyên dùng) hoặc `Non-interactive`.
+> 6. Nhấn Create để lấy bộ SiteKey và SecretKey mới.
 
 ---
 
@@ -527,12 +549,22 @@ server {
 }
 ```
 
-### Lỗi Turnstile SiteKey trống hoặc Bad Request:
-1. **Empty SiteKey**: Next.js không có biến môi trường lúc build. Luôn build bằng lệnh:
-   ```bash
-   npx dotenv-cli -e .env -- npm run build -w ung-dung-giao-dien
-   ```
-2. **Bad Request (400)**: Xảy ra nếu bạn truy cập bằng IP thay vì Domain, hoặc domain `trafficuser.live` chưa được thêm vào "Associated Domains" trong cấu hình Turnstile trên Cloudflare.
+### Lỗi Turnstile SiteKey hoặc "Strange Error" trên trang đăng nhập:
+
+Nếu trang đăng nhập báo lỗi **"Lỗi khi tải mã xác thực CAPTCHA"** hoặc console báo lỗi **401/400** từ `challenges.cloudflare.com`:
+
+1.  **Chưa Authorized Domain:** Đảm bảo bạn đã thêm `trafficuser.live` vào danh sách **Authorized Domains** trong cấu hình Turnstile trên Cloudflare.
+2.  **Sai SiteKey:** Kiểm tra xem `NEXT_PUBLIC_TURNSTILE_SITE_KEY` trong build đã đúng chưa bằng cách chạy lệnh này trên VPS:
+    ```bash
+    grep -roh '0x4AAAAAA[a-zA-Z0-9_\-]*' ~/rutgonlink/ung-dung-giao-dien/.next/static/chunks | sort | uniq
+    ```
+    Nếu ra kết quả khác với SiteKey trong Dashboard Cloudflare, bạn cần build lại app.
+3.  **Lệnh Build Chuẩn để nhận biến môi trường:**
+    ```bash
+    cd ~/rutgonlink
+    npx dotenv-cli -e .env -- npm run build -w ung-dung-giao-dien
+    pm2 restart frontend
+    ```
 
 ---
 
