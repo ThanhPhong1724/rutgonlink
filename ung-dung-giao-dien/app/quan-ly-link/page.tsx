@@ -1,6 +1,6 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
+
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../lib/auth-context';
@@ -285,4 +285,5 @@ export default function QuanLyLinkPage() {
         </div>
     );
 }
+
 

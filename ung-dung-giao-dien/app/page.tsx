@@ -1,6 +1,6 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
+
 
 import { useAuth } from '../lib/auth-context';
 import { useEffect, useState } from 'react';
@@ -562,4 +562,5 @@ export default function Home() {
         </div>
     );
 }
+
 

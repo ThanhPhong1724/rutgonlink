@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import apiClient from '../../../lib/api-client';
 import { RefreshCw, Search, Filter, Lock, Unlock, MoreVertical } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+
 
 export default function AdminLienKet() {
     const { nguoiDung, dangDangNhap: isLoading } = useAuth();
@@ -200,3 +200,4 @@ export default function AdminLienKet() {
         </div>
     );
 }
+

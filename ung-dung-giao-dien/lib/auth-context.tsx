@@ -119,6 +119,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
+        // Tránh lỗi prerender trên Next.js khi Server-Side Rendering chưa bọc AuthProvider
+        if (typeof window === 'undefined') {
+            return {
+                nguoiDung: null,
+                dangDangNhap: true,
+                dangNhap: async () => { },
+                dangKy: async () => { },
+                dangNhapGoogle: async () => { },
+                dangXuat: () => { },
+                capNhatNguoiDungContext: () => { }
+            };
+        }
         throw new Error('useAuth phải được sử dụng bên trong AuthProvider');
     }
     return context;

@@ -1,6 +1,6 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
+
 
 import { useEffect, useState } from 'react';
 import { BACKEND_URL } from '../../lib/api-client';
@@ -655,4 +655,5 @@ export default function NapTienPage() {
         </div>
     );
 }
+
 

@@ -1,6 +1,6 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
+
 
 import { useEffect, useState } from 'react';
 import apiClient from '../../../lib/api-client';
@@ -284,4 +284,5 @@ export default function QuanLyTaiKhoanPage() {
         </div>
     );
 }
+
 
