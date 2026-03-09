@@ -18,7 +18,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         setMounted(true);
     }, []);
 
-    // Routes that use the specific trafficuser.com public layout
+    // Routes that use the specific trafficseo.online public layout
     const publicPaths = ['/traffic-user-la-gi', '/huong-dan', '/cau-hoi-thuong-gap'];
 
     // Routes that need no layout at all (auth pages have their own full screen design)
@@ -72,7 +72,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
                         {/* Logo on mobile only, since Sidebar handles it on Desktop */}
                         <div className="md:hidden flex items-center">
-                            <a href="/" className="font-bold text-primary text-xl tracking-tight">RG Link</a>
+                            <a href="/" className="font-bold text-primary text-xl tracking-tight">TS Link</a>
                         </div>
 
                         <div className="flex-1"></div> {/* Spacer */}

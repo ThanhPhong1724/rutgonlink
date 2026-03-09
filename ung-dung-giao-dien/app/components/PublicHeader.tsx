@@ -17,9 +17,9 @@ export default function PublicHeader() {
                             background: '#7c3aed', color: 'white', display: 'flex',
                             alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
                         }}>
-                            RG
+                            TS
                         </div>
-                        <span className="brand-name" style={{ color: '#be63f9', fontSize: '1.25rem', fontWeight: 600 }}>RutGonLink</span>
+                        <span className="brand-name" style={{ color: '#be63f9', fontSize: '1.25rem', fontWeight: 600 }}>Traffict SEO</span>
                     </Link>
                     <nav className="hd-nav" aria-label="Menu chính">
                         <Link href="/traffic-user-la-gi">Giới thiệu</Link>

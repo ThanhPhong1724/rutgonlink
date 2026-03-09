@@ -59,9 +59,9 @@ export default function Sidebar() {
             <div className="h-16 flex items-center px-6 border-b border-border">
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform shadow-sm">
-                        RG
+                        TS
                     </div>
-                    <span className="font-bold text-lg tracking-tight text-foreground">RutGonLink</span>
+                    <span className="font-bold text-lg tracking-tight text-foreground">Traffict SEO</span>
                 </Link>
             </div>
 

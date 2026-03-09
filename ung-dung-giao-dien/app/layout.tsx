@@ -8,8 +8,8 @@ import AppShell from './components/app-shell';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'RutGonLink',
-    description: 'RutGonLink - Two-sided URL Shortener Platform',
+    title: 'Traffict SEO',
+    description: 'Traffict SEO - Two-sided URL Shortener Platform',
 };
 
 export default function RootLayout({

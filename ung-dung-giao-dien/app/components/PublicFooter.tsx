@@ -12,9 +12,9 @@ export default function PublicFooter() {
                                 background: '#7c3aed', color: 'white', display: 'flex',
                                 alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
                             }}>
-                                RG
+                                TS
                             </div>
-                            <span className="brand-name" style={{ color: '#be63f9', fontSize: '1.1rem', fontWeight: 600 }}>RutGonLink</span>
+                            <span className="brand-name" style={{ color: '#be63f9', fontSize: '1.1rem', fontWeight: 600 }}>Traffict SEO</span>
                         </Link>
                         <p>Nền tảng quản lý liên kết rút gọn và phân phối chiến dịch quảng cáo ưu việt. Tối ưu thu nhập, đo lường chính xác.</p>
                     </div>
@@ -43,15 +43,15 @@ export default function PublicFooter() {
                                 <li><Link href="/dang-nhap">Đăng nhập</Link></li>
                                 <li><Link href="/dang-ky">Đăng ký</Link></li>
                                 <li><a href="#">Affiliate</a></li>
-                                <li><a href="https://t.me/linktop_admin" target="_blank" rel="noopener noreferrer">Liên hệ</a></li>
+                                <li><a href="https://t.me/DevVipIT1" target="_blank" rel="noopener noreferrer">Liên hệ</a></li>
                             </ul>
                         </div>
                     </nav>
                 </div>
                 <div className="ft-bottom">
-                    <p>&copy; {new Date().getFullYear()} RutGonLink. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Traffict SEO. All rights reserved.</p>
                     <div className="ft-social" role="navigation" aria-label="Mạng xã hội">
-                        <a href="https://t.me/linktop_admin" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><i className="fab fa-telegram"></i></a>
+                        <a href="https://t.me/DevVipIT1" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><i className="fab fa-telegram"></i></a>
                         <a href="#" aria-label="Facebook"><i className="fab fa-facebook-f"></i></a>
                         <a href="#" aria-label="Email"><i className="fas fa-envelope"></i></a>
                     </div>

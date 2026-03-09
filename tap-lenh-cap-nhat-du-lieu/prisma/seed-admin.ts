@@ -10,12 +10,12 @@ async function main() {
     // Tạo admin R30
     const matKhauBam = await bcrypt.hash('Admin@123', 12);
     const admin = await prisma.nguoi_dung.upsert({
-        where: { thu_dien_tu: 'admin@rutgonlink.vn' },
+        where: { thu_dien_tu: 'admin@trafficseo.online' },
         update: {},
         create: {
             ma_cong_khai: randomUUID(),
             loai_tai_khoan_mac_dinh: 'R30',
-            thu_dien_tu: 'admin@rutgonlink.vn',
+            thu_dien_tu: 'admin@trafficseo.online',
             mat_khau_bam: matKhauBam,
             ten_hien_thi: 'Quản trị viên',
             ngon_ngu_mac_dinh: 'vi',
@@ -57,7 +57,7 @@ async function main() {
     });
 
     console.log('✅ Admin created:');
-    console.log('   Email: admin@rutgonlink.vn');
+    console.log('   Email: admin@trafficseo.online');
     console.log('   Password: Admin@123');
     console.log('   Role: R30 (Quản trị viên)');
 }

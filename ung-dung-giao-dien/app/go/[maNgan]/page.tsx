@@ -353,7 +353,7 @@ export default function RedirectPage() {
                                 <Banknote className="w-6 h-6" />
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-bold text-indigo-900 text-sm mb-1">Kiếm tiền cùng RutGonLink!</h4>
+                                <h4 className="font-bold text-indigo-900 text-sm mb-1">Kiếm tiền cùng Traffict SEO!</h4>
                                 <p className="text-xs text-indigo-700 font-medium leading-relaxed">
                                     Đăng ký để rút gọn link và kiếm <strong className="font-bold text-indigo-800">{formatTien(phanThuong.don_gia_ban)}đ</strong> mỗi lượt xem. Hỗ trợ rút tiền tức thì khi đủ <strong className="font-bold text-indigo-800">{formatTien(phanThuong.rut_tien_toi_thieu_vnd)}đ</strong>.
                                 </p>

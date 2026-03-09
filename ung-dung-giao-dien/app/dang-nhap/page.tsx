@@ -130,7 +130,7 @@ export default function DangNhapPage() {
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Chào mừng trở lại</h1>
                     <p className="text-text-secondary mt-2 flex items-center justify-center gap-1.5">
                         <Sparkles className="w-4 h-4 text-warning" />
-                        Đăng nhập để vào hệ thống RutGonLink
+                        Đăng nhập để vào hệ thống Traffict SEO
                     </p>
                 </div>
 
