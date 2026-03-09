@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../lib/auth-context';
 import apiClient from '../../lib/api-client';
@@ -302,3 +304,4 @@ export default function ChienDichPage() {
         </div>
     );
 }
+

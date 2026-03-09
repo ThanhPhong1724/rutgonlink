@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../lib/auth-context';
 import apiClient from '../../lib/api-client';
@@ -406,3 +408,4 @@ export default function HoSoPage() {
         </div>
     );
 }
+

@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
 import apiClient from '../../../lib/api-client';
 import { Sliders, Save, Loader2, RefreshCw, DollarSign, Percent, Wallet, Building, Image as ImageIcon, Phone, FileText, Send, UploadCloud } from 'lucide-react';
@@ -228,3 +230,4 @@ export default function CauHinhPage() {
         </div>
     );
 }
+
