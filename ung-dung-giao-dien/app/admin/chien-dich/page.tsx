@@ -3,7 +3,7 @@
 
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import apiClient from '../../../lib/api-client';
 import { RefreshCw, Search, Filter, Play, Pause, Ban, MoreVertical, Eye } from 'lucide-react';
@@ -230,5 +230,6 @@ export default function AdminChienDich() {
         </div>
     );
 }
+
 
 

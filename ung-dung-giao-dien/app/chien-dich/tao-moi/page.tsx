@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import apiClient from '../../../lib/api-client';
 import { BACKEND_URL } from '../../../lib/api-client';
 import {
@@ -356,5 +356,6 @@ export default function TaoChienDichPage() {
         </div>
     );
 }
+
 
 

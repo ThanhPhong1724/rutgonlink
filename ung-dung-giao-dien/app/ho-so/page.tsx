@@ -3,7 +3,7 @@
 
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import apiClient from '../../lib/api-client';
 import {
     User,
@@ -408,5 +408,6 @@ export default function HoSoPage() {
         </div>
     );
 }
+
 
 

@@ -3,7 +3,7 @@
 
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import apiClient from '../../../lib/api-client';
 import { RefreshCw, CheckCircle, XCircle, Search, Clock, CheckCircle2, History, Filter, ChevronDown } from 'lucide-react';
 
@@ -285,5 +285,6 @@ export default function AdminNapTienPage() {
         </div>
     );
 }
+
 
 

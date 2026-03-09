@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '../lib/i18n';
-import { AuthProvider } from '../lib/auth-context';
+import { AuthProvider } from '@/lib/auth-context';
 import AppShell from './components/app-shell';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -31,3 +31,4 @@ export default function RootLayout({
         </html>
     );
 }
+

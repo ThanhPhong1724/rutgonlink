@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LogIn, Mail, Lock, AlertCircle, Sparkles } from 'lucide-react';
@@ -258,3 +258,4 @@ export default function DangNhapPage() {
         </div>
     );
 }
+

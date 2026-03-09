@@ -2,7 +2,7 @@
 
 
 
-import { useAuth } from '../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import apiClient from '../lib/api-client';
@@ -562,5 +562,6 @@ export default function Home() {
         </div>
     );
 }
+
 
 

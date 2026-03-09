@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import { useEffect, useState } from 'react';
 import apiClient from '../../lib/api-client';
 import { LogOut, Wallet } from 'lucide-react';
@@ -59,3 +59,4 @@ export default function HeaderNav() {
         </div>
     );
 }
+

@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from 'react';
 import { BACKEND_URL } from '../../lib/api-client';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import apiClient from '../../lib/api-client';
 import Link from 'next/link';
 import {
@@ -655,5 +655,6 @@ export default function NapTienPage() {
         </div>
     );
 }
+
 
 

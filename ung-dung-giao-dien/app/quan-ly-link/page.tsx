@@ -3,7 +3,7 @@
 
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import apiClient from '../../lib/api-client';
 import { useRouter } from 'next/navigation';
 import {
@@ -285,5 +285,6 @@ export default function QuanLyLinkPage() {
         </div>
     );
 }
+
 
 

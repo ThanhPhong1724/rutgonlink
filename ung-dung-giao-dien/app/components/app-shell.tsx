@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import Sidebar from './sidebar';
 import HeaderNav from './header-nav';
 import PublicHeader from './PublicHeader';
@@ -94,3 +94,4 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
     );
 }
+

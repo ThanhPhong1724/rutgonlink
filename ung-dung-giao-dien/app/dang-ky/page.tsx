@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../lib/auth-context';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { UserPlus, Mail, Lock, User, AlertCircle, MousePointerClick, Wallet, CheckCircle2, Sparkles } from 'lucide-react';
@@ -326,3 +326,4 @@ export default function DangKyPage() {
         </div>
     );
 }
+
