@@ -88,7 +88,9 @@ export class CampaignController {
     @Param('maChienDich') maChienDich: string,
     @Res() res: Response,
   ) {
-    const apiBase = `${res.req.protocol}://${res.req.get('host')}/api/v1`;
+    const protocol = res.req.headers['x-forwarded-proto'] || res.req.protocol;
+    const host = res.req.headers['x-forwarded-host'] || res.req.get('host');
+    const apiBase = `${protocol}://${host}/api/v1`;
 
     const script = `(function(){
 var API="${apiBase}";
