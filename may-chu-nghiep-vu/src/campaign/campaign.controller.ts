@@ -88,9 +88,17 @@ export class CampaignController {
     @Param('maChienDich') maChienDich: string,
     @Res() res: Response,
   ) {
-    const protocol = res.req.headers['x-forwarded-proto'] || res.req.protocol;
-    const host = res.req.headers['x-forwarded-host'] || res.req.get('host');
-    const apiBase = `${protocol}://${host}/api/v1`;
+    // Use the environment variable if available (safest way to ensure https when behind Nginx + Cloudflare), otherwise fallback to request headers.
+    let apiBase = process.env.NEXT_PUBLIC_API_URL || `${res.req.headers['x-forwarded-proto'] || res.req.protocol}://${res.req.headers['x-forwarded-host'] || res.req.get('host')}`;
+
+    // Remove trailing slash if present
+    if (apiBase.endsWith('/')) {
+      apiBase = apiBase.slice(0, -1);
+    }
+    // Append /api/v1
+    if (!apiBase.endsWith('/api/v1')) {
+      apiBase += '/api/v1';
+    }
 
     const script = `(function(){
 var API="${apiBase}";
