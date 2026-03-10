@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node -e \"require('fs').copyFileSync('../.env', '.env.local')\" && next dev -p 3000",
-    "build": "next build",
+    "build": "node -e \"require('fs').copyFileSync('../.env', '.env.local')\" && next build",
     "start": "next start -p 3000",
     "lint": "eslint"
   },
