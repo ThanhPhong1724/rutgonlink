@@ -97,7 +97,7 @@ export class AuthService {
         await this.walletService.taoViMacDinh(nguoiDung.ma, dto.loai_tai_khoan);
 
         // Tạo tokens
-        const tokens = await this.taoCapToken(nguoiDung.ma, nguoiDung.thu_dien_tu, dto.loai_tai_khoan);
+        const tokens = await this.taoCapToken(nguoiDung.ma, nguoiDung.thu_dien_tu, dto.loai_tai_khoan, [dto.loai_tai_khoan]);
 
         return {
             nguoi_dung: {
@@ -105,6 +105,7 @@ export class AuthService {
                 thu_dien_tu: nguoiDung.thu_dien_tu,
                 ten_hien_thi: nguoiDung.ten_hien_thi,
                 loai_tai_khoan: nguoiDung.loai_tai_khoan_mac_dinh,
+                vai_tro: [dto.loai_tai_khoan],
                 so_du_kha_dung: 0,
                 cau_hinh_rut_tien: null,
             },
@@ -336,7 +337,7 @@ export class AuthService {
         await this.walletService.taoViMacDinh(newUser.ma, loaiTaiKhoan);
 
         // Tạo tokens
-        const tokens = await this.taoCapToken(newUser.ma, newUser.thu_dien_tu, loaiTaiKhoan);
+        const tokens = await this.taoCapToken(newUser.ma, newUser.thu_dien_tu, loaiTaiKhoan, [loaiTaiKhoan]);
 
         return {
             nguoi_dung: {
@@ -345,6 +346,7 @@ export class AuthService {
                 ten_hien_thi: newUser.ten_hien_thi,
                 loai_tai_khoan: loaiTaiKhoan,
                 phuong_thuc_dang_ky: 'google',
+                vai_tro: [loaiTaiKhoan],
                 so_du_kha_dung: 0,
                 cau_hinh_rut_tien: null,
             },
