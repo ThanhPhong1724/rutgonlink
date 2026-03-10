@@ -72,7 +72,7 @@ export default function RutTienPage() {
         if (nguoiDung) {
             taiDanhSach();
             // Fetch dynamic config
-            apiClient.get('/api/v1/admin/cau-hinh/public').then((res: any) => {
+            apiClient.get('/api/v1/public/cau-hinh').then((res: any) => {
                 const configs = Array.isArray(res) ? res : [];
                 configs.forEach((c: any) => {
                     if (c.khoa === 'rut_tien_toi_thieu_vnd') setMinVND(Number(c.gia_tri) || 50000);
@@ -458,6 +458,7 @@ export default function RutTienPage() {
         </div>
     );
 }
+
 
 
 
